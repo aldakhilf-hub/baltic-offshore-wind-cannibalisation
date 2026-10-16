@@ -25,11 +25,27 @@ the original source if you plan to redistribute raw data.
 | **ENTSO-E Transparency Platform** | Day-ahead prices, load, generation by type, cross-border physical flows and commercial exchanges, 2017 to 2024, for 14 countries (`2_Regression_Model/data/entsoe_strandA/`) | Re-use permitted with attribution under the Platform's terms of use. A free account is required to pull fresh data. |
 | **ERA5 reanalysis** (ECMWF / Copernicus), accessed through the **Open-Meteo** archive API | Hourly wind speeds at the 31 farm locations, used to build the virtual wind farm output (`2_Regression_Model/data/vwf/`) | Copernicus Licence; Open-Meteo data is CC BY 4.0. Attribute ECMWF and Copernicus. |
 | **ENTSO-E / ENTSOG TYNDP 2024** Scenarios Report | Installed capacity trajectories for 2030 and 2040 under National Trends, Distributed Energy and Global Ambition (`2_Regression_Model/data/tyndp/`, `1_PyPSA_Model/configs/`) | Public ENTSO-E scenario data, attribution requested. |
-| **PyPSA-Eur** (Technical University of Berlin and contributors) | The European power-system model that Track 1 configures and solves | Model code MIT; bundled data under various open licences documented upstream. **Not vendored here**, you clone it separately. |
+| **PyPSA-Eur** (Technical University of Berlin and contributors) | The European power-system model that Track 1 configures and solves | Model code MIT; bundled data under various open licences documented upstream. **The model is not vendored here**, you clone it separately. Three small build products of it are bundled, see below. |
 | **Danish Energy Agency** technology catalogue, as shipped in PyPSA-Eur | Offshore wind cost and learning trajectories used in the cost field and LCOE | Open, attribution requested. |
 | **Global Wind Atlas 4** (DTU / World Bank) | 250 m capacity-factor rasters mosaicked to the roughly 2 km sea field used for the cost and value maps | CC BY 4.0. Attribute the Global Wind Atlas. |
-| **GEBCO 2014** grid | Sea-floor depth driving the water-depth term in the cost model | Free to use with attribution to GEBCO. **Not vendored here**, obtained through the PyPSA-Eur data bundle. |
+| **GEBCO 2014** grid | Sea-floor depth driving the water-depth term in the cost model | Free to use with attribution to GEBCO. Bundled here in `pypsa_inputs/` (35MB), since about twenty scripts need it. |
 | **NREL** reference turbines (Gaertner et al. 2020, IEA 15 MW) | The power curve converting wind speed to output | Public, cite the technical report. |
+
+## The bundled PyPSA-Eur inputs
+
+`pypsa_inputs/` holds three files that would otherwise require installing
+PyPSA-Eur and running its build chain, where the weather cutout alone takes over
+four hours. `tools/setup_pypsa_inputs.py` places them where the scripts expect
+them.
+
+| File | What it is | Provenance |
+|---|---|---|
+| `resources/faisal-2023/regions_offshore_base_s_30.geojson` (3.0MB) | Offshore region polygons for the 30-cluster model | Built by PyPSA-Eur from Marine Regions exclusive economic zone boundaries. Those are CC BY 4.0, attribute Marine Regions. |
+| `resources/faisal-2023/networks/base_s_30_elec_.nc` (8.4MB) | The prepared, **unsolved** network | Built by PyPSA-Eur from open inputs under this project's own configuration, which is in `1_PyPSA_Model/configs/`. |
+| `data/gebco/archive/2014/GEBCO_2014_2D.nc` (35MB) | Sea-floor depth grid | GEBCO, free to use with attribution. |
+
+None of these contain a solved result. Reproducing the solved scenarios needs
+Gurobi and the full chain, as the README explains.
 
 ## Material deliberately excluded from this repository
 

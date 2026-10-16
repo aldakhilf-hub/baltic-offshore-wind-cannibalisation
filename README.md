@@ -102,35 +102,54 @@ m.predict(realized_baltic_off=50,   # GW of Baltic offshore
 ## What you can actually run
 
 Being honest about this matters more than making the repository look turnkey.
-There are three tiers, and only the first two will run on a laptop today.
+There are four tiers. The first three run on a laptop with no licence and no
+market-data account, because the data they need is bundled here.
 
 | Tier | What it does | Needs | Time |
 |---|---|---|---|
-| **1. Emulator** `11_Model_Deliverable/` | Capture value and price per zone for any scenario | `requirements-light.txt` | Milliseconds |
+| **1. Emulator** `11_Model_Deliverable/` | Capture value and price per zone for any buildout and fuel scenario | `requirements-light.txt` | Milliseconds |
 | **2. Regression model** `2_Regression_Model/` | Refit, explain and project the statistical model from the bundled 2,706-month panel | `requirements-light.txt` | Minutes |
-| **3. System model** `1_PyPSA_Model/`, `3_Comparison/`, map figures | Re-solve the European power system, regenerate every projection and map | Full conda env, **Gurobi licence**, a separate PyPSA-Eur clone, roughly 100GB of weather data | Hours per scenario, 5 to 8 hours for the full chain |
+| **3. Figures, maps and the value layer** `7_Thesis_Figures/`, `12_Poster/` | Regenerate about 40 figures, the cost field, the value-adjusted cost maps and the site ranking | `environment.yml` plus `tools/setup_pypsa_inputs.py` | Seconds to minutes each |
+| **4. Re-solving the system model** `1_PyPSA_Model/` | Re-solve the European power system and regenerate every projection from scratch | Everything above, plus a **Gurobi licence**, a PyPSA-Eur clone and roughly 100GB of weather data | Hours per scenario, 5 to 8 hours for the full chain |
 
-Tier 3 is a genuine commitment. Everything downstream of it is already in the
-repository as result CSVs, so you can reproduce any analysis, table or figure
-without re-solving anything. Re-solve only if you are changing the model.
-
-**For tier 3 you also need:**
-
-- **PyPSA-Eur** cloned to `~/pypsa-eur`. Every Track 1 script expects that
-  location. Pin the version in `environment.lock.yml`, which is
-  `v2026.02.0-39-g23c2fac7`. Later versions have moved config keys and will not
-  run these configs unchanged.
-- **A Gurobi licence** at `~/gurobi.lic`. Free academic licences cover this.
-  HiGHS ships with linopy and is open source, but the 30-cluster hourly solves
-  were never tested on it.
-- **An ENTSO-E Transparency Platform account**, only if you want to re-pull market
-  data. The key goes in `~/.entsoerc` as `api_key: <token>`. The pulled data is
-  already bundled, so this is optional.
+**Tier 3 needs one setup step.** About twenty scripts read three files that
+normally come out of a PyPSA-Eur build: the offshore region polygons, the
+prepared network and the GEBCO depth grid. Building those yourself means
+installing PyPSA-Eur and running its snakemake chain, where the weather cutout
+alone takes over four hours. All three are small, so they ship here in
+`pypsa_inputs/`. One command puts them where the scripts look:
 
 ```bash
 mamba env create -f environment.yml
 mamba activate baltic-wind
+python tools/setup_pypsa_inputs.py          # add --link to save 46MB
 ```
+
+After that, `python 7_Thesis_Figures/7.18_make_value_heatmaps.py` reproduces the
+capture-value maps byte for byte. Nothing is overwritten unless you pass
+`--force`, and if you install PyPSA-Eur later the directories merge.
+
+**Eleven scripts still need a solved network** and will fail without tier 4.
+They are `7.16`, `7.19`, `7.20`, `7.28`, `7.30`, `7.31`, `7.36`, `7.39`, `7.44`,
+and the two in `3_Comparison/scripts/`. Between them they produce the grid
+reversal, the buildout-against-congestion decomposition, who bears the loss, the
+congestion income and the matched skill scoring. **Their output tables are all
+bundled** in `7_Thesis_Figures/results/`, so you can read, plot and build on
+every one of those results. You only need tier 4 to recompute them under a
+changed model.
+
+**For tier 4 you also need:**
+
+- **PyPSA-Eur** cloned to `~/pypsa-eur` at version `v2026.02.0-39-g23c2fac7`,
+  recorded in `environment.lock.yml`. Every Track 1 script expects that
+  location. Later versions have moved config keys and will not run these configs
+  unchanged.
+- **A Gurobi licence** at `~/gurobi.lic`. Free academic licences cover this.
+  HiGHS ships with linopy and is open source, but the 30-cluster hourly solves
+  were never tested on it.
+- **An ENTSO-E Transparency Platform account**, only if you want to re-pull
+  market data. The key goes in `~/.entsoerc` as `api_key: <token>`. The pulled
+  data is already bundled, so this is optional.
 
 ---
 
@@ -154,8 +173,10 @@ produce results from stale inputs. Run them in sequence.
 12_Poster/             A1 conference poster and its figure scripts
 docs/                  Surrogate design plan, supervisor briefing, the forensic
                        audit of 2026-06-10, the thesis skeleton
+pypsa_inputs/          Three small PyPSA-Eur build products the figure scripts
+                       need, so you do not have to run its build chain
 thesis/                The submitted thesis, 114 pages
-tools/                 smoke_test.py
+tools/                 smoke_test.py, setup_pypsa_inputs.py
 ```
 
 Each track has its own `README.md` with a script-by-script reference, inputs and
@@ -277,16 +298,83 @@ Read this section before you change anything. Each item cost real time to learn.
 
 ---
 
-## Reading order, if you are taking this over
+## If you are taking this over
 
-1. The thesis abstract and Chapter 1, in `thesis/`. Twenty minutes.
-2. This README's finding and gotcha sections.
-3. `python tools/smoke_test.py`, then `11_Model_Deliverable/run_example.py`.
-4. `0_README/0_READ_THIS_FIRST.md` for how each method works, remembering that its
-   numbers are superseded.
-5. Thesis Chapter 3 for the method and Chapter 4 for the results.
-6. The per-track `README.md` files when you need a specific script.
-7. [`CONTINUATION.md`](CONTINUATION.md) for what is unfinished and worth doing next.
+Work through it in this order. Each stage ends with a number you should be able
+to reproduce, which is how you know your setup is right before you trust
+anything you compute yourself. **Resist starting with the system model.** It is
+the tempting thing to open first and it will cost you weeks before you have
+learned anything.
+
+### Stage 1, about an hour. Get a model running and read the argument.
+
+```bash
+pip install -r requirements-light.txt
+python tools/smoke_test.py
+python 11_Model_Deliverable/run_example.py
+```
+
+Read the thesis abstract and Chapter 1 while that installs. Twenty minutes, and
+it tells you what every folder here was for.
+
+**Checkpoint:** the smoke test passes 8 of 8 and prints `North Sea 0.57, Baltic
+0.47`, and the emulator returns a capture value for all 15 zones.
+
+### Stage 2, a day. Reproduce the empirical half.
+
+The data is bundled, so you can skip the pulls and start at the fit.
+
+```bash
+cd 2_Regression_Model/scripts
+python 2.06_fit_regression.py          # fits five algorithms
+python 2.08b_demeaned_shap.py          # what actually drives capture value
+python 2.07_project_capture_values.py  # and where the model gives up
+```
+
+**Checkpoints.** `2.06` should give **0.686** predicting farms it never saw and
+**0.752** on the easier random split, with XGBoost ahead of random forest ahead
+of support vector regression. `2.08b` should show crowding leading at about 32%
+once each farm is compared with the month's average, with carbon collapsing from
+29% to 4%. `2.07` should report **0 of 36** projection rows inside the training
+range.
+
+That last number is the whole reason this project has two models, so make sure
+you understand it before going further. It is not a bug.
+
+### Stage 3, a day. Reproduce the figures and the value layer.
+
+```bash
+mamba env create -f environment.yml && mamba activate baltic-wind
+python tools/setup_pypsa_inputs.py
+python 7_Thesis_Figures/7.18_make_value_heatmaps.py   # the capture-value maps
+python 7_Thesis_Figures/7.32_make_site_ranking.py     # does value change where to build
+python 7_Thesis_Figures/7.43_make_group_arc_simple.py # the headline figure
+```
+
+**Checkpoint:** `7.32` should rank German Bight first on both cost and value at
+every horizon, with the correlation between the two rankings falling from 0.99
+in 2025 to 0.90 in 2040.
+
+### Stage 4, only when you have a reason. Touch the system model.
+
+Read `docs/6_REVIEW_FINDINGS_2026-06-10.md` first. It is the forensic audit that
+found five result-changing defects in this model, and it will teach you more
+about the traps than any amount of running it. Then get a Gurobi licence, clone
+PyPSA-Eur at the pinned version, and start with `1.02_run_baseline.sh` for a
+single year so you can compare against the recorded validation before you try a
+scenario.
+
+**Checkpoint:** Germany 2023 should come out at about 0.908 against an observed
+0.909. If it does, the chain is sound. If DK2 comes out near 0.93 against an
+observed 0.784, that is expected and documented, so read trap 2 above before you
+try to fix it.
+
+### Then
+
+`CONTINUATION.md` lists what is unfinished, ranked by payoff, along with what was
+already tried and failed. The first two items there, curtailment volume and the
+planned-grid case, are both tractable for a single MSc and neither needs the
+full chain re-solved.
 
 ---
 
