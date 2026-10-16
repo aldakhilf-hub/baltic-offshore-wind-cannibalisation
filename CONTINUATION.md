@@ -92,7 +92,8 @@ problem rather than a research-design problem.
 
 ### 1.6 Where cannibalisation saturates
 
-A surrogate regression over 76 solves finds the loss is **concave** in
+A fast approximation fitted over 76 solves (scripts 1.12 to 1.16) finds
+the loss is **concave** in
 penetration, with a penetration-squared coefficient of −0.193 and a confidence
 interval of [−0.215, −0.169] that does not cross zero. Marginal damage
 *saturates*. This was a surprise, since the loss is usually described as

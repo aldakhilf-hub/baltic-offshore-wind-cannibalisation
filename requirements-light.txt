@@ -1,6 +1,6 @@
-# Minimal install. Enough to run the fast surrogate model (11_Model_Deliverable)
-# and to refit, explain and project the regression model (2_Regression_Model)
-# from the data panel bundled in this repository.
+# Minimal install. Enough to refit, explain and project the regression model
+# (2_Regression_Model) from the data panel bundled in this repository, which
+# needs no API key and no licence.
 #
 #   python -m venv .venv && source .venv/bin/activate
 #   pip install -r requirements-light.txt
@@ -9,8 +9,8 @@
 # macOS note: xgboost needs the OpenMP runtime, which pip does not install.
 # If you get "Library not loaded: libomp.dylib", run:  brew install libomp
 #
-# This does NOT cover Track 1 (PyPSA-Eur) or the map figures, which need the
-# full conda stack in environment.yml.
+# This does NOT cover the figure and map scripts or the power-system model,
+# which need the full conda stack in environment.yml.
 
 pandas==2.3.3
 numpy==2.4.3
