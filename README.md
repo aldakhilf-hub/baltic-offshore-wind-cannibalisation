@@ -81,7 +81,7 @@ There are two installs. Start with the light one.
 **Light, for the regression model.** No conda, no licence, no API key.
 
 ```bash
-git clone https://github.com/<your-account>/baltic-offshore-wind-cannibalisation.git
+git clone https://github.com/aldakhilf-hub/baltic-offshore-wind-cannibalisation.git
 cd baltic-offshore-wind-cannibalisation
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-light.txt
