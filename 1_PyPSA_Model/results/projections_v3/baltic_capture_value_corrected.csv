@@ -1,0 +1,5 @@
+year,buildout,baltic_offshore_GWh,baltic_offshore_penetration,CV_raw,CV_corr_central,CV_corr_mild
+2030,baseline,58102.8777,0.171,0.7971,0.6538,0.7333
+2030,high,92402.4575,0.272,0.7821,0.6388,0.7183
+2040,baseline,103007.3622,0.2614,0.4993,0.356,0.4355
+2040,high,207612.457,0.5269,0.3359,0.1926,0.2721

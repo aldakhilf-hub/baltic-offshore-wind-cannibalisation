@@ -1,0 +1,223 @@
+# =============================================================================
+# PyPSA-Eur config for North Sea / Baltic offshore wind value thesis
+# Faisal Aldakhil — MSc Sustainable Energy Futures, Imperial College London
+#
+# Year:        2024 (third validation year, post-crisis normal; added 2026-06-12
+#              to extend the bias-correction fit with a second high-penetration
+#              DK2 anchor)
+# Geography:   14 countries spanning North Sea + Baltic + Nordics
+# Clusters:    30 (enough resolution for offshore bidding zones to separate)
+# Resolution:  hourly (8784 snapshots — 2024 is a leap year)
+#
+# Drop this file into config/ inside the pypsa-eur clone and invoke with:
+#   snakemake -call --configfile config/config.faisal-2024.yaml \
+#       results/faisal-2024/networks/base_s_30_elec_.nc
+#
+# Identical to config.faisal-2023.yaml except: run name, snapshots, cutout
+# (europe-2024-era5, built via CDS), fleet filters (2024), 2024 fuel/CO2
+# overrides, and build_cutout enabled (no 2024 cutout exists on disk).
+# =============================================================================
+
+run:
+  name: "faisal-2024"
+  shared_resources:
+    policy: false
+  disable_progressbar: false
+
+# -----------------------------------------------------------------------------
+# Scenario wildcards. {clusters} flows through every rule's output filename.
+# -----------------------------------------------------------------------------
+# NOTE: the {ll} and {simpl} wildcards were removed from PyPSA-Eur (this repo is
+# v2026.02.0). The transmission limit is set via electricity.transmission_limit.
+scenario:
+  clusters: [30]
+  opts: [""]
+
+# -----------------------------------------------------------------------------
+# Geography. Every country touching the North Sea or Baltic, plus Norway.
+# -----------------------------------------------------------------------------
+countries:
+  - GB    # Great Britain
+  - IE    # Ireland
+  - FR    # France
+  - BE    # Belgium
+  - NL    # Netherlands
+  - DE    # Germany
+  - DK    # Denmark
+  - "NO"  # Norway          <-- quoted: unquoted NO parses as False in YAML
+  - SE    # Sweden
+  - FI    # Finland
+  - EE    # Estonia
+  - LV    # Latvia
+  - LT    # Lithuania
+  - PL    # Poland
+
+# -----------------------------------------------------------------------------
+# Time horizon. Full calendar year 2024, hourly. 8784 snapshots (leap year).
+# -----------------------------------------------------------------------------
+snapshots:
+  start: "2024-01-01"
+  end:   "2025-01-01"
+  inclusive: "left"
+
+# -----------------------------------------------------------------------------
+# Weather cutout. Same bounding box as 2019/2023; built fresh via CDS
+# (the earlier yearly cutouts were deleted after use to reclaim disk).
+# -----------------------------------------------------------------------------
+data:
+  cutout:
+    source: build
+    version: latest
+
+atlite:
+  default_cutout: europe-2024-era5
+  cutouts:
+    europe-2024-era5:
+      module: era5
+      x: [-11.0, 32.0]   # lon: west of Ireland → east of Estonia
+      y: [ 47.0, 71.5]   # lat: northern France → North Cape
+      dx: 0.3
+      dy: 0.3
+      time: ["2024-01-01", "2024-12-31"]
+
+# -----------------------------------------------------------------------------
+# Demand. The bundled synthetic demand dataset ends before 2024 and its
+# unconditional indexing crashes build_electricity_demand (first 2024 run,
+# 2026-06-12). The real sources are complete for 2024 across all 14 countries
+# (ENTSO-E archive: every series full except IE missing 67 h, within the
+# gap-filling limits; GB comes from the NESO file, full through Jan 2026),
+# so the synthetic supplement is simply not needed.
+# -----------------------------------------------------------------------------
+load:
+  supplement_synthetic: false
+
+# -----------------------------------------------------------------------------
+# Electricity sector configuration.
+# -----------------------------------------------------------------------------
+electricity:
+  voltages: [220., 300., 380.]
+  base_network: "entsoegridkit"
+  co2limit_enable: false      # historical year — let prices clear, no cap
+  transmission_limit: v1.0    # freeze line volume at today's level (historical dispatch)
+  # Year-correct fleet (same audit-fix pattern as 2019/2023).
+  powerplants_filter: "(DateOut >= 2024 or DateOut != DateOut) and (DateIn <= 2024 or DateIn != DateIn)"
+
+  extendable_carriers:
+    Generator: []             # historical: no investment in this year
+    StorageUnit: []
+    Store: []
+    Link: []
+
+  renewable_carriers:
+    - onwind
+    - offwind-ac
+    - offwind-dc
+    - solar
+    - hydro
+
+  conventional_carriers:
+    - nuclear
+    - oil
+    - OCGT
+    - CCGT
+    - coal
+    - lignite
+    - geothermal
+    - biomass
+
+  estimate_renewable_capacities:
+    enable: true
+    from_powerplantmatching: true
+    year: 2024
+
+# -----------------------------------------------------------------------------
+# Renewable resource modelling.
+# -----------------------------------------------------------------------------
+renewable:
+  hydro:
+    cutout: europe-2024-era5
+    carriers: [ror, PHS, hydro]
+    PHS_max_hours: 6
+    hydro_max_hours: "energy_capacity_totals_by_country"
+    flatten_dispatch: false
+  onwind:
+    cutout: europe-2024-era5
+  offwind-ac:
+    cutout: europe-2024-era5
+  offwind-dc:
+    cutout: europe-2024-era5
+  solar:
+    cutout: europe-2024-era5
+
+# -----------------------------------------------------------------------------
+# Costs. Tech-cost year 2020 kept identical to 2019/2023 so the baselines
+# differ only in weather/fleet/fuel-year. 2024 fuel prices overridden via
+# custom_cost_fn; CO2 price set explicitly under emission_prices.
+# -----------------------------------------------------------------------------
+costs:
+  year: 2020
+  version: v0.6.2
+  rooftop_share: 0.14
+  fill_values:
+    FOM: 0
+    VOM: 0
+    efficiency: 1
+    fuel: 0
+    investment: 0
+    lifetime: 25
+  emission_prices:
+    enable: true
+    co2: 67.0      # 2024 EUA annual mean (project series: 67.2 EUR/tCO2)
+  custom_cost_fn: data/custom_costs_2024.csv
+
+# -----------------------------------------------------------------------------
+# Clustering. 30 buses, weighted toward offshore-relevant markets.
+# -----------------------------------------------------------------------------
+clustering:
+  focus_weights:
+    DE: 0.18
+    GB: 0.12
+    "NO": 0.10
+    DK: 0.08
+    NL: 0.07
+    SE: 0.07
+  aggregation_strategies:
+    generators:
+      p_nom_max: sum
+      p_nom_min: sum
+  consider_efficiency_classes: false
+
+# -----------------------------------------------------------------------------
+# Solver. Identical to 2019/2023 baselines (parity with the bias fit).
+# -----------------------------------------------------------------------------
+solving:
+  options:
+    clip_p_max_pu: 1.0e-2
+    load_shedding:
+      enable: true
+      default_cost: 100000
+      all_carriers: true
+      carriers: {}
+    noisy_costs: true
+    skip_iterations: true
+    track_iterations: false
+  solver:
+    name: gurobi
+    threads: 8
+    method: 2              # barrier
+    crossover: 0
+    BarConvTol: 1.0e-6
+    FeasibilityTol: 1.0e-6
+    AggFill: 0
+    PreDual: 0
+    GURO_PAR_BARDENSETHRESH: 200
+
+# -----------------------------------------------------------------------------
+# Output. build_cutout enabled: no 2024 cutout exists on disk; CDS build.
+# -----------------------------------------------------------------------------
+enable:
+  retrieve: true
+  retrieve_databundle: true
+  retrieve_cost_data: true
+  retrieve_cutout: false
+  build_cutout: true

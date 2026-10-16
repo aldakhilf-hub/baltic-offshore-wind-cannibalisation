@@ -1,0 +1,244 @@
+=== SLIDE 1: The Market Value of Offshore Wind: The North Sea and the Baltic to 2040 ===
+NOTES (points to highlight):
+  •  Thesis: market value of offshore wind, open North Sea vs enclosed Baltic, out to 2040
+  •  Order: three research questions, then method from first principles, then results
+  •  About 20 minutes; please interrupt at any point
+
+=== SLIDE 2: Research questions ===
+  •  RQ1. How does Baltic offshore value compare with the North Sea today, and how does it evolve under the buildout to 2030 and 2040? | •  RQ2. Which market mechanisms set how fast value erodes, and do they differ between an enclosed and an open basin? | •  RQ3. Can a model trained on history project these futures, or is a system model needed, and how should the two combine?
+NOTES (points to highlight):
+  •  RQ1: how does Baltic value compare with the North Sea today, and under the 2030/2040 buildout
+  •  RQ2: which mechanisms set the erosion, and do they differ enclosed vs open
+  •  RQ3: can a history-trained model project the future, or is a system model needed
+  •  All on open data; both predecessor theses relied on confidential Aurora data
+
+=== SLIDE 3: The puzzle: theory expects the Baltic to be favourable ===
+  •  A wind farm earns the price in the hours it generates, not the average | •  When wind blows, all farms flood the market together and depress that price | •  Capture value = the fraction of the average price a farm actually earns | •  Theory (hydro premium, low buildout) says the Baltic should hold value better
+NOTES (points to highlight):
+  •  A farm earns the price in its windy hours, not the average
+  •  Correlated wind means all farms flood the market together and push that price down (cannibalisation)
+  •  Capture value = fraction of the average price actually earned; below 1 = self-depressing
+  •  Textbook (Hirth) expects the Baltic to hold value better (Nordic hydro, little built); we test it
+
+=== SLIDE 4: Capture value is the number that matters ===
+  •  Revenue per MW = capacity factor × price level × capture value | •  Capacity factor flat over time; price level shared; only capture value diverges
+NOTES (points to highlight):
+  •  Revenue/MW = capacity factor x price level x capture value
+  •  CF is flat, price level is shared (gas spike); only capture value diverges, Baltic further
+  •  So the whole revenue story lives in capture value: our common currency across both models
+  •  Measured monthly for 31 study farms (16 North Sea, 15 Baltic)
+
+=== SLIDE 5: Scope: three groups of bidding zones ===
+  •  Unit = the bidding zone (the area where one price is set) | •  North Sea (open): DE, NL, BE, Danish DK1, FR | •  Baltic under-built: Poland, Estonia, Latvia, Lithuania | •  Baltic built-out (the preview): Danish DK2, Swedish SE4 | •  Excluded: Finland (nuclear collapse), GB (Brexit), Norway (hydro)
+NOTES (points to highlight):
+  •  Unit of analysis = the bidding zone (one price per area per hour)
+  •  North Sea (open): DE, NL, BE, DK1, FR
+  •  Baltic under-built: PL, EE, LV, LT; built-out preview: DK2, SE4
+  •  Excluded: Finland (nuclear), GB (Brexit), Norway (hydro)
+  •  Space-for-time: the built-out zones are the future of the under-built ones
+
+=== SLIDE 6: The design: two instruments, one validation ===
+  •  Regression: measures the past, where data is dense | •  PyPSA system model: projects the future, where there is no data | •  The validation triangle: checks both agree where reality can be observed | •  A deliberate division of labour (this is RQ3)
+NOTES (points to highlight):
+  •  Need to MEASURE the past (data-rich) and PROJECT the future (no data); no single method does both
+  •  Regression measures the past and explains the mechanism
+  •  PyPSA carries the future; the validation triangle checks they agree where reality is observable
+  •  Deliberate division of labour; the regression provably cannot extrapolate
+
+=== SLIDE 7: The data: a virtual wind farm from weather ===
+  •  ERA5 wind → hub height → power curve → hourly output, for every zone | •  Validated against metered generation: r = 0.88 hourly, 0.95 monthly
+NOTES (points to highlight):
+  •  Need a consistent hourly profile for every zone, including zones with no farm yet, from open data
+  •  Built from weather: ERA5 wind, lifted to 150 m hub height, through a 15 MW turbine power curve
+  •  Validated vs metered output: r = 0.88 hourly, 0.95 monthly
+  •  Neither predecessor validated this; it lets us price farms in zones with prices but no turbines
+
+=== SLIDE 8: Instrument 1: the regression, trained and tested blind ===
+  •  Input: the 7 market features for one farm-month  →  output: that farm-month's capture value | •  Scored leave-farm-out: every prediction is for a farm the model never trained on (R² 0.69; every enclosed Baltic zone predicted blind)
+NOTES (points to highlight):
+  •  Unit = one farm-month; 7 features in, that month's capture value out
+  •  Scored leave-farm-out (blind): R2 = 0.69
+  •  Capture value is a property of prices, so I price the validated farm in all 7 enclosed Baltic zones
+  •  Predicts the enclosed Baltic zones blind within 0.07 (general, not memorising one zone)
+  •  A North-Sea-only model still transfers to the Baltic (R2 ~0.38): general, not memorising
+
+=== SLIDE 9: Inside the regression: inputs, the model, and how it projects ===
+NOTES (points to highlight):
+  •  The empirical instrument opened up (the mirror of the PyPSA box)
+  •  Inputs: 7 market features per farm-month (crowding, demand, penetration, fuel, buffering) from the VWF + ENTSO-E
+  •  Model: gradient boosting, 400 shallow trees summed; trained operational, scored leave-farm-out (R2 0.69)
+  •  How it projects: the tree ABSTAINS (flat ~0.82); the analytical form extrapolates gently (0.79, 0.72) but linearly
+  •  That sits above PyPSA's 0.57/0.47 (the convex collapse it cannot see), so PyPSA carries 2040
+
+=== SLIDE 10: Instrument 2: PyPSA, the power-system model ===
+  •  Open model: grid, generators, storage, demand, solved hourly | •  14 countries, ~30 nodes, frozen 2020 grid, year-correct fleets | •  Wholesale price = the hourly shadow price at each node | •  Future built from official TYNDP 2030/2040 scenarios
+NOTES (points to highlight):
+  •  Open model: grid, generators, storage, demand, solved least-cost every hour
+  •  Wholesale price = hourly shadow price at each node, then capture value by the same formula
+  •  14 countries, ~30 nodes, grid FROZEN at 2020 (today's grid under tomorrow's fleet, on purpose)
+  •  Future built from official TYNDP 2030/2040 scenarios; the frozen grid is bracketed later
+
+=== SLIDE 11: Inside PyPSA: inputs, the dispatch it solves, and the outputs ===
+NOTES (points to highlight):
+  •  Inputs: grid nodes, full fleet, ERA5 weather, hourly demand, fuel and carbon prices
+  •  Solves: minimise system cost over 8,760 hours; the supply=demand shadow price is the wholesale price
+  •  Windy hour: wind is marginal, price falls toward zero; still hour: gas sets it
+  •  Supervisor's question: same capture-value formula as the regression, but price from a grid the regression cannot see
+
+=== SLIDE 12: The validation triangle ===
+  •  Three independent estimates: observed, PyPSA, regression (blind) | •  The blind regression lands within 0.014 of observed; PyPSA's congestion bias shows in DK1 and DK2
+NOTES (points to highlight):
+  •  Three independent estimates per zone: observed, PyPSA, regression (blind)
+  •  Blind regression within 0.014 of observed (2023), 0.025 across 3 years, by a route independent of PyPSA
+  •  PyPSA exact on open zones, carries its congestion bias on DK1 and DK2
+  •  No predecessor confronted a statistical model, a physical model, and observation like this
+
+=== SLIDE 13: RQ1: the market value of offshore wind today ===
+NOTES (points to highlight):
+  •  Direct answer to RQ1, as a map; shading = capture value
+  •  Today the map is all green: under-built Baltic 0.85 to 0.92, level with the North Sea 0.85 to 0.90
+  •  So the Baltic does NOT start behind
+
+=== SLIDE 14: RQ1: by 2030 the Baltic begins to fade ===
+NOTES (points to highlight):
+  •  First buildout has landed; North Sea and under-built Baltic still mostly green (high 0.7s to 0.8s)
+  •  Baltic starting to fade as its own correlated wind begins to crowd its price
+  •  Estonia grey: no offshore in the water yet at this horizon
+
+=== SLIDE 15: RQ1: by 2040 the Baltic erodes well past the North Sea ===
+  •  At parity today (~0.89); by 2040 the Baltic falls to about 0.47, the North Sea holds about 0.57
+NOTES (points to highlight):
+  •  Map splits: Baltic red-orange (PL 0.49, LV 0.42, EE 0.39); North Sea holds about 0.57
+  •  Parity today (~0.89) to Baltic ~0.47 vs North Sea ~0.57; Baltic loses ~47%, North Sea ~35%
+  •  The buildout, not the starting point, is what does it
+  •  Why it falls faster, and whether the grid changes it, are the next sections
+
+=== SLIDE 16: The build-out behind the result: the full energy mix ===
+NOTES (points to highlight):
+  •  The buildout behind the result; the natural question is whether it is realistic
+  •  North Sea offshore ~19 to 165 GW; Baltic Sea ~3 to 50 GW (of which the enclosed states 0 to ~25, a quarter of regional demand)
+  •  Full mix: gas and oil persist (~80 and 9 GW) through 2040, nuclear and hydro stay, only DE/PL coal winds down
+  •  The fossil backbone still sets the low-wind price, which is exactly what erodes capture value
+
+=== SLIDE 17: Does the Baltic still erode faster if we build the grid? No, it reverses ===
+  •  Frozen grid (today's): the Baltic erodes faster, 2040 Baltic 0.47 vs North Sea 0.57 | •  Cost-optimal grid: the ordering REVERSES, Baltic 0.66, above the North Sea 0.64 | •  So the Baltic's faster erosion is a grid story: open the export valve and its advantage returns | •  Interconnection is the single highest-leverage lever on Baltic value
+NOTES (points to highlight):
+  •  The reframe: I removed the grid limit, let the model build the cost-optimal transmission and pay for it
+  •  Frozen (solid): Baltic erodes faster, 0.47 vs North Sea 0.57
+  •  Optimal (dashed) CROSSES: Baltic recovers to 0.66, above the North Sea 0.64 (PL 0.49 to 0.74)
+  •  So the faster Baltic erosion is a frozen-grid effect; open the export valve and its advantage returns
+  •  Policy headline: interconnection is the highest-leverage lever
+  •  Honest detail: at 2030 (low penetration) optimal is marginally below frozen; it only helps once congestion binds
+
+=== SLIDE 18: Congestion or enclosure? Decomposing the Baltic's fall ===
+  •  Each basin's 2040 fall split in two: structural buildout (the grid cannot fix) and congestion (an optimal grid removes) | •  Both start at parity ~0.89; on the frozen grid the Baltic falls to 0.47, the North Sea to 0.57 | •  The Baltic's congestion penalty (0.19) is 3x the North Sea's (0.06); its structural fall is SMALLER (0.22 vs 0.25) | •  So the enclosure shows up as congestion the grid removes, not a permanent penalty: build it and the Baltic ends ABOVE the North Sea
+NOTES (points to highlight):
+  •  Answers his question directly: of the CV fall, how much is congestion (grid-fixable) vs structural enclosure
+  •  Both basins start at parity ~0.89; frozen 2040: Baltic 0.47, North Sea 0.57
+  •  North Sea fall = 80% structural, 20% congestion; Baltic = 54% structural, 46% congestion
+  •  Baltic congestion penalty (0.19) is 3x the North Sea's (0.06); its STRUCTURAL fall is smaller (0.22 vs 0.25)
+  •  So the enclosure is really congestion: build the grid and the Baltic ends ABOVE the North Sea (0.66 vs 0.64)
+
+=== SLIDE 19: RQ2: what sets the severity, and it is steeper in the Baltic ===
+  •  Strip out the 2022 fuel-crisis signal and crowding leads (32%); carbon and gas are a time artefact, not a farm-to-farm driver | •  Same mechanisms in both basins, but steeper in the enclosed Baltic: the same buildout cannibalises about twice as hard
+NOTES (points to highlight):
+  •  Cross-sectional question: why does one farm earn less than another in the same month
+  •  Strip the shared 2022 fuel-crisis time signal: carbon collapses from 29% to 4%
+  •  Crowding (correlation with system wind) leads at 32%; buffering (interconnection, flexibility) close behind
+  •  Basins differ: the same buildout cannibalises about twice as steeply in the enclosed Baltic (analytical penalty 0.74 vs 0.37)
+
+=== SLIDE 20: RQ2: the enclosed basin blows together ===
+  •  Under-built Baltic states correlate at 0.61; the North Sea at 0.44; the two basins decouple (0.28) | •  As those zones build out, their correlated wind floods the enclosed market together, the congestion the grid relieves
+NOTES (points to highlight):
+  •  Geographic root of why the Baltic is steeper (built like Jacquet: cluster the farms, circle them on the map)
+  •  Under-built Baltic correlate at 0.61 vs North Sea 0.44; built-out DK2/SE4 tightest at 0.87
+  •  Those under-built zones are exactly the ones about to build out
+  •  The two basins are decoupled (0.28), so the Baltic cannot lean on the North Sea to absorb its surplus
+
+=== SLIDE 21: RQ3: the regression abstains, so PyPSA carries the future ===
+  •  Every future scenario leaves the model's training range (carbon) | •  The tree model flat-lines out of support, by proof; a time-split test fails
+NOTES (points to highlight):
+  •  Can an empirical model project these futures? Provably no, and that is by design
+  •  Every future scenario sits beyond the training range (carbon); the tree flat-lines out of support
+  •  Time-split test (train through 2022, predict 2023 to 2024) fails: R2 about minus 0.03
+  •  So the regression abstains and PyPSA carries it; the triangle proves the hand-off (a methodological contribution)
+
+=== SLIDE 22: Capture value to 2040: every instrument on one chart ===
+  •  PyPSA frozen finds the convex collapse (North Sea 0.57, Baltic 0.47); the optimal grid recovers it (0.64, 0.66) | •  The regression cannot see it: the tree abstains (flat ~0.82), the analytical form projects only gently (0.79, 0.72) | •  That 2040 gap IS the convex cannibalisation the linear empirical form misses, so PyPSA carries the headline | •  Agree to 2030 (trust either); part at 2040 (only the market-clearing model is right)
+NOTES (points to highlight):
+  •  Every instrument on one chart (North Sea left, Baltic right), 2025 to 2040
+  •  PyPSA frozen finds the collapse (NS 0.57, Baltic 0.47); the optimal grid recovers it (0.64, 0.66)
+  •  Regression stays high: tree abstains (flat ~0.82), analytical projects gently (0.79, 0.72)
+  •  The 2040 gap (~0.22 NS, 0.25 Baltic) IS the convex collapse the linear form misses, so PyPSA carries it
+  •  Agree to 2030 (trust either); part at 2040 (only the market-clearing model is right)
+
+=== SLIDE 23: Does offshore wind pay? From capture value to net value ===
+  •  Net value per MW = revenue (resource x capture value x price) minus depth- and distance-driven cost | •  2025: ~48% of the shelf is merchant-profitable (green); by 2040 cannibalisation shrinks it to ~12% even as turbines get cheaper | •  WHY it shrinks: cannibalisation erodes the captured price faster than cheaper turbines cut cost | •  WHY the green is the shallow North Sea: best wind + shallow + near-shore stack the most cost margin; deep water never clears the floating-foundation cost
+NOTES (points to highlight):
+  •  Does it PAY? Net value/MW = resource (CF) x capture value x price, minus depth/distance cost (GWA + GEBCO)
+  •  2025: ~48% of the shelf profitable (green); 2040: ~12% - the profitable area collapses
+  •  WHY it shrinks: cannibalisation erodes capture value, so revenue drops below cost across more of the sea; cheaper turbines (~12%) cannot keep up with the value lost
+  •  WHY the shallow North Sea stays green: it stacks all three - best wind (CF ~0.5), shallow water, near shore - so the most cost margin to absorb the erosion
+  •  WHY the deep water (Norwegian trench) is always red: floating foundations add ~EUR 1m/MW, so even strong wind cannot break even there
+  •  WHY it still beats the Baltic despite the capture-value reversal: net value is set by resource + cost, and the North Sea's ~20% CF edge outweighs the Baltic's higher capture value
+  •  Takeaway: build EARLY (value highest before cannibalisation) and SHALLOW (cost margin); late and deep both lose
+
+=== SLIDE 24: A new metric: the value-adjusted LCOE (cannibalisation undoes the learning) ===
+  •  Value-adjusted LCOE = LCOE / capture value = the wholesale price a site needs to break even | •  Raw LCOE FALLS with technology (74 to 66 EUR/MWh); the value-adjusted LCOE RISES (87 to 121), because cannibalisation overruns learning | •  Robust: costs would have to fall 36% by 2040 (3x the DEA's 12%) just to hold it flat, in all 27 cases tested
+NOTES (points to highlight):
+  •  The contribution: value-adjusted LCOE = LCOE / capture value = the price a site needs to break even
+  •  Raw LCOE FALLS with technology (74 to 66 EUR/MWh); the value-adjusted LCOE RISES (87 to 121)
+  •  Cannibalisation undoes the learning; the competitive area (under ~70) collapses from 35% to under 1%
+  •  Robust: costs must fall 36% by 2040 (3x the DEA's 12%) just to hold it flat, in all 27 cases
+  •  No one has mapped this spatially before
+
+=== SLIDE 25: Interconnection is the lever, in money ===
+  •  Interconnection lowers the enclosed Baltic's value-adjusted LCOE by EUR 33/MWh, 4x the core North Sea's EUR 8 | •  Worth ~EUR 1.2 bn/yr in captured revenue to Baltic offshore alone, about 55% of the cost of ALL the new lines | •  The recommendation: the cost-optimal grid makes Baltic offshore viable; without it, it needs subsidy
+NOTES (points to highlight):
+  •  Value-adjusted LCOE = LCOE/CV, and interconnection raises CV, so it lowers the break-even price
+  •  Enclosed Baltic falls EUR 33/MWh, four times the core North Sea's EUR 8 (Danish transit EUR 48)
+  •  Worth about EUR 1.2 bn/yr to Baltic offshore alone, roughly 55% of the cost of ALL the new lines
+  •  Not an open cost problem: the model builds a specific 133 GW at EUR 2.2 bn/yr and stops
+  •  Recommendation: build the grid; it is a break-even cut aimed exactly at the basin with the problem
+
+=== SLIDE 26: Does capture value change where to build? ===
+  •  Rank candidate areas by cost alone (LCOE) versus with capture value added (value-adjusted LCOE) | •  2025 the two rankings agree (0.99); by 2040 they diverge (0.90), so the value dimension increasingly reorders site choice | •  The cheap-but-cannibalised eastern Baltic (Estonia, Latvia) drops; the value-resilient Danish North Sea rises; the German Bight stays number one | •  So ranking on cost alone is fine today but increasingly misleads toward 2040
+NOTES (points to highlight):
+  •  Objective 4: does adding capture value change which sites to build?
+  •  Rank candidate areas by cost (LCOE) vs value-adjusted (vLCOE): 2025 agree (0.99), 2040 diverge (0.90)
+  •  Movers: cheap-but-cannibalised Estonia + Latvia DROP; value-resilient Danish North Sea RISES; German Bight stays #1
+  •  So cost-only ranking is fine today but increasingly misleads toward 2040: the value dimension matters
+
+=== SLIDE 27: Where to build: many sites, two lenses ===
+  •  169 candidate sites across both shelves, ranked two ways: cheapest break-even (value for money) and largest profit per MW (net value) | •  Both reward the shallow, windy, value-resilient shelf; the German Bight tops both lenses | •  Value-for-money tilts to the cheap shallow western Baltic (Poland, DK2); absolute money tilts to the high-resource open North Sea | •  Recommendation: German Bight and the shallow western Baltic first; the cheap eastern-Baltic sites are a value trap by 2040
+NOTES (points to highlight):
+  •  169 candidate sites, two lenses: cheapest break-even (value for money) vs largest profit/MW (net value)
+  •  Both reward the shallow windy value-resilient shelf; German Bight tops both
+  •  Value-for-money tilts to the cheap shallow western Baltic (PL, DK2); absolute money tilts to the high-resource North Sea
+  •  Recommendation: German Bight + shallow western Baltic first; cheap eastern Baltic (EE, LV) is a value trap by 2040
+
+=== SLIDE 28: Is it worth spreading across both basins? ===
+  •  Cannibalisation hedge (YES): all-North-Sea craters; spreading the optimal ~12% to the Baltic lifts aggregate 2040 capture value about a third (planned split near-optimal) | •  Risk hedge (NO): the wind decorrelates (0.28) but capture value co-moves (0.80) on shared European prices, so no volatility cut | •  So the portfolio payoff is on the MEAN (less cannibalisation), not the variance | •  The low correlation that motivates diversification lives in the wind, not the value
+NOTES (points to highlight):
+  •  Objective 5: portfolio value of spreading across both basins vs concentrating in the North Sea
+  •  Cannibalisation hedge YES: all-NS craters; spreading ~12% to the Baltic lifts aggregate 2040 CV about a third; planned split near-optimal
+  •  Risk hedge NO: wind decorrelates (0.28) but capture value co-moves (0.80), so no volatility cut; NS is lower-risk AND higher-value
+  •  Payoff is on the MEAN (less cannibalisation), not the variance; the low correlation lives in the wind, not the value
+
+=== SLIDE 29: What it means, against the three questions ===
+  •  RQ1: at parity today; the Baltic falls to about 0.47 by 2040 vs the North Sea's 0.57, but with grid expansion it recovers to 0.66, above the North Sea | •  RQ2: same mechanisms, steeper in the enclosed Baltic (weak export valve, correlated wind) | •  RQ3: regression measures and explains; PyPSA carries the far future; the triangle validates the hand-off | •  Economics: the value-adjusted LCOE RISES despite cheaper turbines; interconnection lowers the Baltic's by EUR 33/MWh, worth ~EUR 1.2 bn/yr | •  Policy: interconnection is THE lever, it decides whether the Baltic erodes or thrives; subsidy design must price the structural fall
+NOTES (points to highlight):
+  •  RQ1: parity today, Baltic about 0.47 by 2040 vs North Sea 0.57; with grid it recovers to 0.66 (above)
+  •  RQ2: same mechanisms, steeper in the enclosed Baltic (correlated wind, weak export valve)
+  •  RQ3: regression measures and explains; PyPSA carries the future; the triangle validates the hand-off
+  •  Economics: value-adjusted LCOE rises despite cheaper turbines; interconnection lowers the Baltic's EUR 33/MWh (~EUR 1.2 bn/yr)
+  •  Policy: interconnection is THE lever; subsidy and CfD design must price the structural fall
+
+=== SLIDE 30: Conclusion ===
+  •  The enclosed Baltic does not start behind, but on today's grid the buildout cannibalises it faster | •  Build the grid and it reverses: the Baltic recovers above the North Sea, and the erosion is a policy choice, not fate | •  New metric, the value-adjusted LCOE, rises despite cheaper turbines; interconnection lowers the Baltic's most (EUR 33/MWh, ~EUR 1.2 bn/yr) | •  Contribution: two validated instruments, a proven hand-off, a value-adjusted cost map, on open data  ·  Thank you · questions
+NOTES (points to highlight):
+  •  The Baltic does not start behind, but on today's grid the buildout cannibalises it faster
+  •  Build the grid and it reverses: the Baltic recovers above the North Sea; the erosion is a policy choice, not fate
+  •  Novel metric: value-adjusted LCOE rises despite cheaper turbines; interconnection lowers the Baltic's most (EUR 33/MWh, ~EUR 1.2 bn/yr)
+  •  Contribution: two validated instruments, a proven hand-off, a value-adjusted cost map, all on open data
+  •  Thank you; happy to take questions

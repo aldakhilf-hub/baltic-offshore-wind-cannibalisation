@@ -1,0 +1,10 @@
+# Minimal dependencies for the Baltic offshore-wind capture-value model.
+# No Gurobi, no PyPSA, no market-data credentials needed.
+#
+# Install with:   pip install -r requirements.txt
+# (macOS only, if xgboost fails to load: brew install libomp)
+
+xgboost>=2.0
+pandas>=1.5
+numpy>=1.23
+matplotlib>=3.6   # only needed for the optional figure in run_example.py

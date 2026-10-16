@@ -1,0 +1,6 @@
+step,changed,mae_before,mae_after,delta,share_pct,verdict
+Baseline system model,"thermal line ratings, perfect-foresight hydro",,0.0486,,,starting error
+Network representation,published market NTCs on DK2-SE and DE-DK1,0.0486,0.038,0.0105,21.6926,explains and removes
+Hydro foresight,"perfect to 12 monthly solves, 14-day lookahead",0.038,0.0439,-0.0058,0.0,"explains none, error rises"
+Must-run CHP and negative bidding,"DK thermal p_min_pu 0.20-0.50, offshore bid 0 to -10",0.038,0.0424,-0.0043,0.0,"explains none, zero negative hours"
+Residual,"unit commitment, subsidised bidding (outside LP model class)",,0.038,,78.3074,78% of it is DK2 alone

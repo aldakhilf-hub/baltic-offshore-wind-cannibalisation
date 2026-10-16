@@ -1,0 +1,4 @@
+split,model,R2
+RandomKFold (Paul protocol),XGBoost,0.7331
+GroupKFold(farm),XGBoost,0.5978
+NS->Baltic,XGBoost,0.3597

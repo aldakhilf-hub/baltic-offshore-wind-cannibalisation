@@ -1,0 +1,6 @@
+scope,added_GW,added_TWkm,existing_GW,change_pct,cost_bn_per_yr
+Whole model (AC lines and DC links),137.1,34.4,344.2,40,2.7
+Cross-border corridors only,85.1,21.9,109.6,78,1.85
+"Corridors touching PL, EE, LV, LT",21.5,6.1,33.7,64,0.48
+"Cross-border, touching PL, EE, LV, LT",18.7,5.4,18.4,102,0.43
+"Baltic rim including FI, SE, DK2",40.2,12.6,67.7,59,1.22

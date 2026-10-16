@@ -1,0 +1,4 @@
+component,value,pct,evidence
+Mechanism disagreement,0.035,10.0584,gap where both models hold support (2030)
+Support loss (abstention),0.3131,89.9416,increment appearing only at 2040
+Total 2040 divergence,0.3481,100.0,measured

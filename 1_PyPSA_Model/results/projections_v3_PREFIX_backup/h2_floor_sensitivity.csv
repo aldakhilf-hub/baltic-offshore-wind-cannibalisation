@@ -1,0 +1,5 @@
+scenario,CV_H2x0.5,CV_H2x1.0,CV_H2x1.5,delta_halve,delta_x1.5,max_swing
+2040-NT-balticBaseline,0.532,0.573,0.6,-0.041,0.028,0.069
+2040-NT-balticHigh,0.437,0.481,0.487,-0.044,0.006,0.05
+2040-DE-balticHigh,0.483,0.479,0.467,0.004,-0.012,0.016
+2040-GA-balticHigh,0.466,0.46,0.466,0.007,0.007,0.007

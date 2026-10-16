@@ -1,0 +1,152 @@
+
+\section{Modelling Wind Value Across Space}\label{sec:modelling}
+
+This thesis must answer a question that no existing tool addresses in isolation: for each candidate offshore location across the North Sea and Baltic Sea, what hourly generation profile would a turbine produce, what price would that electricity command in the local wholesale market, and how does this revenue vary spatially in ways that current cost-based assessments miss? Answering it requires coupling three modelling traditions that have developed largely independently: wind resource modelling, which estimates when and how much electricity a turbine generates (Section~\ref{sec:wind_modelling}); electricity price modelling, which quantifies how markets respond to variable generation (Section~\ref{sec:price_modelling}); and GIS-based spatial assessment, which maps physical and economic feasibility across space (Section~\ref{sec:gis_assessment}). This section reviews each tradition, identifies the gap at their intersection, and sets out the methodological approach this thesis adopts to bridge it.
+
+\subsection{Wind Resource Modelling}\label{sec:wind_modelling}
+
+\subsubsection{Reanalysis Datasets}\label{sec:reanalysis}
+
+A comparative study spanning the North Sea and Baltic Sea requires a single reanalysis product applied with identical methodology across both basins. Table~\ref{tab:reanalysis_comparison} compares the principal datasets available. The central trade-off is between spatial resolution and cross-basin coverage: higher-resolution regional products (NORA3 at 3~km, COSMO-REA6 at 6~km) outperform ERA5 in representing coastal wind gradients \cite{Solbrekke2022, Spangehl2021}, but none spans both basins within a single consistent framework with the hourly time series needed for capture value computation. ERA5 (ECMWF), with 0.25$^{\circ}$ resolution and hourly coverage from 1940 to the present, is the only product that does. Validation against 77 tall towers worldwide \cite{Staffell2016, Ramon2019} and four North Sea platforms ($r = 0.85$ to $0.93$ at 100~m; \cite{Bot2024}) confirms its reliability for the broad spatial patterns this thesis requires, even if it sacrifices fine-scale coastal detail.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Comparison of reanalysis and wind resource datasets for European offshore wind assessment. ERA5 is the only product spanning both basins with hourly resolution from 1940 to present, making it the default choice for cross-basin capture value analysis despite its coarser spatial grid.}
+\label{tab:reanalysis_comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c l l p{4.0cm}}
+\toprule
+\textbf{Dataset} & \textbf{Spatial} & \textbf{Temporal} & \textbf{Coverage} & \textbf{Geographic scope} & \textbf{Limitation for this thesis} \\
+\midrule
+ERA5 \cite{Ramon2019} & 0.25\textdegree{} ($\sim$31~km) & Hourly & 1940--present & Global & Underestimates strong winds offshore \\
+\addlinespace
+NORA3 \cite{Solbrekke2022} & 3~km & Hourly & 1996--2019 & North Sea, Baltic, Norwegian, Barents & Ends before post-2020 capacity surge \\
+\addlinespace
+NEWA \cite{Hahmann2020} & 3~km & Climatological & 30-year mean & All Europe & No hourly time series for price matching \\
+\addlinespace
+COSMO-REA6 \cite{Spangehl2021} & 6~km & Hourly & 1995--2019 & Central Europe only & Does not cover full Baltic basin \\
+\addlinespace
+EMHIRES \cite{GonzalezAparicio2017} & National & Hourly & 1986--2015 & EU member states & No site-level spatial resolution \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+ERA5 does exhibit systematic offshore biases. Gandoin and Garza \cite{Gandoin2024} showed that it underestimates strong wind speeds non-linearly, by approximately 15\% at 15~m\,s$^{-1}$ and up to 20\% at 20~m\,s$^{-1}$, due to excessive sea-surface drag parameterisation. Given the cubic relationship between wind speed and power, even modest upper-tail biases propagate into significant capacity factor errors. Their proposed correction improves extreme wind representation by approximately 10\% \cite{Gandoin2024}.
+
+This thesis therefore uses ERA5 with the Gandoin and Garza bias correction as its resource modelling foundation. Hourly temporal coverage from 1940 to present across both basins is non-negotiable for computing capture values: the wind-price correlation that drives cannibalisation operates at the hourly timescale, and forward projections under Esbjerg and Marienborg expansion scenarios require a dataset that extends beyond the 2019 endpoint of higher-resolution alternatives like NORA3 and COSMO-REA6. The cost is coarser spatial granularity (31 km vs 3--6 km), acceptable for the basin-scale comparison this thesis pursues.
+
+\subsubsection{The Virtual Wind Farm Methodology}\label{sec:virtual_wind_farm}
+
+Converting gridded wind speed fields into hourly power output requires a standardised conversion pipeline. Staffell and Pfenninger \cite{Staffell2016} established the benchmark methodology, implemented through the Renewables.ninja platform and now widely adopted.
+
+\vspace{4pt}
+
+The pipeline consists of four steps: interpolation of reanalysis wind speeds to farm coordinates using local regression (LOESS); extrapolation from reference height to hub height (80 to 150~m) using a logarithmic wind profile; conversion through the manufacturer's power curve; and Gaussian smoothing to represent sub-grid variability \cite{Staffell2016}. Bias correction is critical: uncorrected MERRA-2 underestimates observed onshore capacity factors by 26 to 32\% and offshore by 12 to 15\%. After applying a time-invariant multiplicative correction calibrated to national fleet data, estimates agree with observations to within 0.5 percentage points for most European countries \cite{Staffell2016}.
+
+\vspace{4pt}
+
+The importance of this methodology for capture value assessment lies in its temporal fidelity. Hourly capacity factors at each location enable the computation of generation-weighted average prices through direct multiplication with hourly market prices. Any loss of temporal resolution would obscure the within-day correlation between wind output and price that drives cannibalisation. This pipeline forms the supply-side backbone of the present thesis: hourly wind power time series at each candidate location are the input from which capture values are ultimately derived.
+
+\subsection{Electricity Price Modelling}\label{sec:price_modelling}
+
+\subsubsection{Taxonomy of Approaches}\label{sec:price_taxonomy}
+
+Electricity prices exhibit statistical properties that make them among the most challenging commodities to forecast: extreme volatility, seasonality at multiple timescales, mean-reversion punctuated by spikes, and an increasing incidence of negative values driven by renewable surplus \cite{Weron2014}. The choice of modelling approach for this thesis is governed by a specific requirement: the model must quantify the \textit{relationship} between wind generation and electricity prices across heterogeneous European markets, not simply forecast tomorrow's price in a single zone. Weron's \cite{Weron2014} taxonomy classified electricity price forecasting methods into five families: multi-agent, fundamental, reduced-form, statistical, and computational intelligence models. Of these, fundamental models (which simulate the merit order clearing process) and statistical approaches are most relevant to wind value assessment, because the former can project capture values under hypothetical future scenarios while the latter can estimate empirical wind-price relationships \cite{Mendes2024, Lago2021}. A critical distinction for this thesis is between forecasting models and structural models: the former excel at short-horizon price prediction in a single market, while the latter can explain cross-market variation in the wind-price relationship. Maciejowska \cite{Maciejowska2020} illustrated the value of structural approaches through quantile regression, showing that wind output compresses the upper tail of the price distribution more than it shifts the mean, explaining why capture prices decline faster than average prices as penetration increases.
+
+\vspace{4pt}
+
+A parallel tradition of energy system models, reviewed by Pfenninger et al. \cite{Pfenninger2014} and Ringkj{\o}b et al. \cite{Ringkjob2018}, highlights a persistent trade-off: tools with fine spatial resolution tend to simplify temporal dynamics, while those with rich temporal detail aggregate spatial granularity. For a study spanning over 30 bidding zones at hourly resolution, this trade-off becomes binding.
+
+\vspace{4pt}
+
+Table~\ref{tab:modelling_comparison} compares the principal modelling tools relevant to this thesis, drawn from the taxonomies of Pfenninger et al. \cite{Pfenninger2014} and Ringkj{\o}b et al. \cite{Ringkjob2018} and supplemented by recent developments.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comparison of modelling tools relevant to offshore wind value assessment. The final column identifies each tool's specific limitation relative to the integrated spatial-economic framework this thesis requires.}
+\label{tab:modelling_comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l c c p{4.5cm} p{4.5cm}}
+\toprule
+\textbf{Tool} & \textbf{Type} & \textbf{Spatial} & \textbf{Temporal} & \textbf{Key strengths} & \textbf{Limitation for this thesis} \\
+\midrule
+atlite \cite{Hofmann2021} & Resource conversion & 0.05--0.25\textdegree{} & Hourly & Open-source; flexible weather data; land-use constraints & No market or revenue component \\
+\addlinespace
+Renewables.ninja \cite{Staffell2016} & Resource conversion & Site-level & Hourly & Bias-corrected; validated globally; transparent & No market or revenue component \\
+\addlinespace
+PyPSA-Eur \cite{Horsch2018} & System optimisation & Nodal & Hourly & Full European transmission; co-optimises dispatch and investment & Produces shadow prices, not observed market prices \\
+\addlinespace
+EuroMod \cite{Mendes2024} & Dispatch / market & Zonal (27) & Hourly & Realistic price volatility; 40--43\% error reduction & Requires commercial data; cannot project beyond calibration period \\
+\addlinespace
+PLEXOS \cite{PLEXOS2024} & Unit commitment & Nodal/zonal & Sub-hourly & Industry standard; detailed generator constraints & Proprietary and costly; not reproducible \\
+\addlinespace
+Stiewe et al. \cite{Stiewe2025} & Panel regression & Zonal (30+) & Annual & Cross-border spillovers; robust to heterogeneity & Fixed effects absorb market characteristics; not spatially mapped \\
+\addlinespace
+Bosch et al. \cite{Bosch2017, Bosch2018, Bosch2019} & GIS spatial & 0.05\textdegree{} & 32 slices/yr & Global coverage; depth, distance, LCOE & No market value or revenue dimension \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+The pattern across these tools is consistent: each excels along one dimension while neglecting another. Resource conversion tools (atlite, Renewables.ninja) produce spatially resolved hourly generation but contain no market component. System optimisation models (PyPSA-Eur, extended globally through the PyPSA-meets-Earth initiative \cite{PyPSAEarth2024}) capture network constraints but produce shadow prices, the dual variables of a cost minimisation problem, rather than the observed market prices that determine actual capture revenues. Dispatch models (EuroMod, PLEXOS) reproduce realistic price dynamics but require proprietary plant-level data that limits reproducibility. GIS frameworks (Bosch et al.) provide the geographic scaffold but lack temporal granularity and revenue modelling. Zeyringer et al. \cite{Zeyringer2018} demonstrated the practical consequence: power system designs ignoring the spatiotemporal coincidence of high wind and low prices overestimate renewable deployment potential. No existing tool integrates all three dimensions at the resolution this thesis requires: spatial resource, temporal price, and economic value.
+
+\subsubsection{The Wind-Price Relationship}\label{sec:wind_price}
+
+The specific modelling challenge for this thesis is not price forecasting per se but the quantification of how wind generation affects electricity prices and, through that mechanism, determines the capture value at any given location. This relationship is the core of the cannibalisation problem: the negative covariance between wind output and wholesale price corresponds, in economic terms, to the profile cost defined in Section~\ref{sec:market_value} \cite{Hirth2015, Ueckerdt2013}. Modelling it requires a framework that (a) captures the nonlinear, market-specific sensitivity of prices to wind generation, (b) accounts for cross-border spillovers through interconnected bidding zones, and (c) can be applied consistently across markets with fundamentally different generation mixes and flexibility endowments.
+
+\vspace{4pt}
+
+Three classes of approach have been applied to this problem, each with distinct strengths and limitations. \textit{Regression-based models} estimate the relationship empirically by regressing wholesale prices (or value factors) on wind penetration and control variables. Hirth \cite{Hirth2013} pioneered this approach by combining meta-regression across published studies with results from the EMMA dispatch model, estimating the slope of the value factor decline as a function of wind market share. Stiewe et al. \cite{Stiewe2025} extended it to a spatial panel framework with fixed effects across more than 30 European bidding zones, regressing domestic value factors on both domestic and neighbouring wind penetration while controlling for load, gas prices, and hydro availability. Their model specification takes the form:
+
+\begin{equation}
+    VF_{i,t} = \alpha_i + \beta_1 \cdot WP_{i,t} + \beta_2 \cdot \overline{WP}_{N(i),t} + \gamma \mathbf{X}_{i,t} + \varepsilon_{i,t}
+    \label{eq:stiewe_model}
+\end{equation}
+
+where $VF_{i,t}$ is the wind value factor in bidding zone $i$ at time $t$, $WP_{i,t}$ is domestic wind penetration, $\overline{WP}_{N(i),t}$ is the capacity-weighted average wind penetration of directly interconnected neighbours, $\mathbf{X}_{i,t}$ is a vector of controls, and $\alpha_i$ are zone fixed effects. The estimated coefficients ($\hat{\beta}_1 = -0.61$, $\hat{\beta}_2 = -0.33$) quantify the domestic and cross-border cannibalisation effects respectively. The framework's strength lies in its ability to isolate the marginal effect of wind while controlling for confounders across 30+ markets. Its limitations are threefold. First, fixed effects absorb time-invariant market characteristics (generation mix, flexibility) into zone-specific intercepts rather than modelling them explicitly, preventing the framework from explaining \textit{why} the same penetration increase produces different value factor declines across different markets. Second, annual temporal resolution smooths over within-year dynamics (seasonal wind patterns, fuel price spikes, interconnector congestion during storm events) that drive the most severe capture value erosion. Third, the linear specification imposes a constant marginal effect of penetration, whereas evidence reviewed in Section~\ref{sec:merit_order} suggests this effect accelerates at higher penetration levels.
+
+\vspace{4pt}
+
+L\'{o}pez Prol, Steinbacher, and Zilberman \cite{LopezProl2024} complemented this pan-European perspective with a study of cannibalisation dynamics across 24 European countries, confirming the nonlinearity that Cevik and Ninomiya \cite{Cevik2022} identified: the marginal price impact of each additional percentage point of wind accelerates at higher penetration levels. Their results suggest that the relationship between penetration and value factor is better described by a convex function than a linear one, an empirical regularity with direct implications for projecting capture values under the Esbjerg and Marienborg expansion scenarios.
+
+\vspace{4pt}
+
+\textit{Merit order simulation models} take a structural approach, explicitly constructing the supply stack from individual generator costs and capacities. This enables scenario analysis because the stack can be modified to reflect future capacity changes or fuel price movements. Green and Vasilakos \cite{GreenVasilakos2011} applied this method to the UK market, estimating the merit order effect of offshore wind and finding that large-scale deployment would reduce wholesale prices but simultaneously erode the revenues of wind generators themselves. However, merit order simulation requires detailed plant-level data for every bidding zone in the analysis and assumes perfect competition that may not capture strategic bidding or the complex block-order structures of European day-ahead auctions \cite{Weron2014, Mays2023}. Mendes, Staffell, and Green \cite{Mendes2024} addressed some of these limitations with EuroMod, a dispatch model calibrated to 27 European countries that achieves 40 to 43\% error reduction relative to linear supply curve models by incorporating non-convex generator constraints. EuroMod produces realistic price volatility including negative prices, but its calibration to a specific historical period limits its transferability to future market configurations.
+
+\vspace{4pt}
+
+\textit{Hybrid approaches} combine elements of both traditions and increasingly incorporate flexibility technologies that could arrest the cannibalisation trajectory. Glaum, Stiewe, and Hirth \cite{OffshoreHybrids2024} used a counterfactual dispatch model to estimate the price impact of offshore wind and hybrid projects across the coupled European day-ahead market, finding that hybrid configurations combining wind with electrolysis can reduce cannibalisation by absorbing surplus generation locally, a result with direct relevance to North Sea hydrogen strategies such as the Danish energy island programme. More broadly, battery storage and Power-to-X technologies represent the primary mechanisms through which future capture value declines could be moderated: by shifting surplus generation out of low-price hours, they reduce the temporal concentration of output that drives the merit order effect. However, the literature has not yet integrated these flexibility pathways into spatial capture value models, meaning that projections of future value factor decline implicitly assume that today's limited flexibility endowments persist. Demand-side flexibility, including industrial load shifting and demand response programmes \cite{Hirth2015}, represents a further mitigation channel that remains largely unquantified in the cannibalisation literature and falls outside the scope of this thesis. Van der Heijden et al. \cite{VanDerHeijden2021} confirmed the practical importance of cross-border integration: incorporating generation and price data from Germany, Norway, France, and Denmark reduced Dutch day-ahead price forecasting error by approximately 4\%, reinforcing that any wind capture value model must account for conditions in neighbouring zones.
+
+This thesis adopts a parameterised regression approach that extends Stiewe et al. by replacing zone fixed effects with explicit market parameters (generation mix composition, flexibility endowment, interconnection capacity). Three attributes justify this choice over alternatives: it explains cross-market variation rather than absorbing it into intercepts; it requires no proprietary plant-level data, unlike PLEXOS and EuroMod, ensuring reproducibility; and it can project forward under Esbjerg and Marienborg expansion scenarios, unlike calibrated dispatch models tied to a historical period. The cost is reduced short-horizon price accuracy relative to full structural models such as EuroMod, which achieves 40 to 43\% error reduction through non-convex generator constraints \cite{Mendes2024}. For a thesis comparing capture values across two basins under future scenarios rather than forecasting next-day prices, this trade-off is justified.
+
+\subsubsection{Methodological Approach of This Thesis}\label{sec:thesis_method}
+
+The modelling gap this thesis addresses sits between the Stiewe et al. \cite{Stiewe2025} panel regression and the Bosch-Staffell-Hawkes GIS framework \cite{Bosch2017, Bosch2018, Bosch2019}. The former quantifies how wind penetration affects value factors across European markets but does not map this relationship spatially; the latter maps where wind energy is physically and economically viable but ignores revenue.
+
+\vspace{4pt}
+
+This thesis addresses this gap by developing a wind-price model that extends the Stiewe et al. framework in three ways. First, rather than absorbing market characteristics into fixed effects, the model parameterises them explicitly: generation mix composition (thermal share, hydro share), interconnection capacity relative to peak load, and flexibility metrics enter as explanatory variables alongside wind penetration. This allows the model to explain cross-market variation in value factor sensitivity, not merely estimate an average effect. Second, the model incorporates the nonlinear penetration-value relationship documented by L\'{o}pez Prol et al. \cite{LopezProl2024} and Cevik and Ninomiya \cite{Cevik2022}, enabling projections under expansion scenarios that push markets into penetration regimes beyond the historical sample. Third, the model is coupled spatially with the Virtual Wind Farm pipeline \cite{Staffell2016}: hourly generation profiles at each candidate offshore location are fed through the wind-price model to produce location-specific capture value estimates, which are then overlaid onto the GIS framework alongside capacity factor, water depth, distance to coast, and LCOE.
+
+\vspace{4pt}
+
+The result is a spatial assessment that ranks candidate sites not by how much energy they produce but by how much revenue they generate, integrating the supply-side tradition of Bosch et al. \cite{Bosch2017, Bosch2018, Bosch2019} with the market-side analysis of Stiewe et al. \cite{Stiewe2025} within a single framework applicable to both basins. This approach necessarily inherits limitations from its constituent components (ERA5's offshore wind speed biases \cite{Gandoin2024}, the assumption that historical wind-price relationships extrapolate to higher penetration regimes, and the omission of future flexibility technologies) but it represents a step toward the integrated spatial-economic assessment that the literature currently lacks.
+
+\subsection{GIS-Based Spatial Assessment}\label{sec:gis_assessment}
+
+\subsubsection{The Bosch, Staffell, and Hawkes Progression}\label{sec:bosch_progression}
+
+The most comprehensive spatial framework for assessing wind energy potential at the global scale has been developed through a series of studies by Bosch, Staffell, and Hawkes. Bosch et al. \cite{Bosch2017} produced temporally resolved onshore wind capacity factors at a 0.05$^{\circ}$ grid using MERRA-2 data binned into 32 time slices per year. The 2018 extension \cite{Bosch2018} applied the methodology offshore with constraints for water depth and distance to coast, estimating global offshore potential at 390,000 to 570,000~GW. The 2019 study \cite{Bosch2019} added spatially resolved LCOE, showing that attractive sites cluster in shallow North Sea waters (\pounds60 to 80/MWh) while remote deep-water sites exceed \pounds200/MWh. Chu and Hawkes \cite{Chu2020} extended the approach to 731 terrestrial and 339 offshore zones globally with hourly capacity factor profiles.
+
+\vspace{4pt}
+
+The framework's fundamental limitation is that it characterises costs comprehensively but ignores revenue entirely. A site with a low LCOE and a high capacity factor may nonetheless generate poor returns if it sells into a market where cannibalisation has depressed capture prices below the LCOE threshold. Even recent extensions toward hybrid offshore systems \cite{OffshoreHybrids2024} treat capture value as an evaluation metric rather than a core spatial modelling output. This asymmetry, detailed cost modelling paired with absent revenue modelling, is the central gap that an integrated spatial-economic framework must fill.
+\subsection{Section Summary}\label{sec:modelling_summary}
+
+Three modelling traditions have developed independently: wind resource modelling generates hourly generation profiles but contains no market component; electricity price modelling quantifies how wind penetration affects wholesale prices but does not map this spatially; and GIS-based frameworks characterise physical feasibility and costs but ignore revenue. Each excels along one dimension while neglecting the others.
+
+Current energy system models sacrifice spatial resolution for temporal detail or vice versa; dispatch and market models require proprietary data that limits reproducibility; GIS frameworks omit the temporal dynamics and market integration that determine actual revenue. This thesis bridges the gap by developing a parameterised wind-price model, calibrated at the zonal level but applied spatially across candidate offshore sites, that explicitly incorporates market characteristics as explanatory variables rather than absorbing them into fixed effects.
+
+This approach enables the cross-basin revenue-augmented spatial assessment set out in Section~\ref{sec:research_gap}. Rather than ranking candidate sites by capacity factor or LCOE alone, it ranks them by capture value, integrating supply-side resource quality with demand-side price exposure through an empirically grounded framework applicable to both basins. The objectives that follow operationalise this framework.

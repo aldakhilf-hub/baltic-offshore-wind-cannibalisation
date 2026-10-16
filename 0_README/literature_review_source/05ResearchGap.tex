@@ -1,0 +1,38 @@
+
+\section{Research Gap and Objectives}\label{sec:research_gap}
+
+\subsection{Identified Gaps}\label{sec:gaps}
+
+The preceding review has traced three interconnected lines of inquiry: the mechanisms that erode wind energy value, the regional factors that cause this erosion to vary, and the modelling tools available to assess wind potential. Each is well developed in isolation; the problem is that they have not been brought together. Three gaps emerge at their intersection, each a consequence of the one before it.
+
+\vspace{4pt}
+
+\textbf{Gap 1: No systematic comparison of wind energy value across the North Sea and Baltic Sea basins.} Cannibalisation has been studied at the national level \cite{Hirth2013, Brown2021, LopezProl2024} and across interconnected European markets in aggregate \cite{Stiewe2025, Cevik2022}. Jacquet \cite{Jacquet2024} compared offshore wind capture values between the North Sea and the French Mediterranean, finding capture values projected to remain above 0.9 until 2050 in the Mediterranean, corresponding to revenues 10 to 39\% higher than North Sea equivalents. However, the Baltic Sea was not examined. This omission is partly historical: until the 2022 Marienborg Declaration, the Baltic was not a major offshore wind basin, and most cannibalisation research followed capital allocation to the North Sea. It is also partly methodological: a meaningful cross-basin comparison requires coupling wind resource data with market-specific value models across fundamentally different market structures, which is a task that straddles the atmospheric science, energy economics, and power systems communities, each of which has developed its tools in relative isolation. This thesis extends Jacquet's comparative framework to the Baltic, testing whether its combination of hydro-rich Nordic markets, coal-heavy systems, and emerging markets creates a similarly favourable value environment, or whether the planned sevenfold expansion will erode that advantage before it can be captured.
+
+\vspace{4pt}
+
+\textbf{Gap 2: GIS-based spatial assessment frameworks exclude market value.} The most comprehensive spatial assessments \cite{Bosch2017, Bosch2018, Bosch2019, Chu2020} characterise only the supply side: resource quality and construction cost. A location with a 45\% capacity factor and an LCOE of \euro{}50/MWh appears attractive on these maps, yet if cannibalisation drives the capture price to \euro{}30/MWh, the project loses money. Conversely, a 35\% capacity factor site in a market with robust capture values could yield higher returns. This gap persists because GIS-based frameworks originated in the renewable resource assessment community, where the relevant output is physical potential (GW, TWh), not revenue. Incorporating market value requires coupling spatial resource data with electricity market models that operate at a different resolution (bidding zones rather than grid cells) and a different disciplinary tradition (energy economics rather than geospatial engineering). No existing spatial model, including recent Baltic-specific work by Barzehkar et al. \cite{Barzehkar2024}, has bridged this disciplinary boundary. Until it does, the cross-basin comparison identified in Gap~1 cannot be performed at the spatial resolution at which investment decisions are made.
+
+\vspace{4pt}
+
+\textbf{Gap 3: No parameterised wind-price model that explains cross-market variation in cannibalisation severity.} Incorporating capture value into a spatial framework requires a model that can estimate what a wind farm at a specific location will earn given the characteristics of the market it sells into. Hirth \cite{Hirth2013} estimated the wind-price relationship through meta-regression calibrated to individual countries; Stiewe et al. \cite{Stiewe2025} extended this to 30+ bidding zones but absorbed market characteristics into zone fixed effects. The fixed-effects approach is a natural choice for panel econometrics, it controls for unobserved heterogeneity without requiring the researcher to specify what drives it, but the cost is that the model can estimate \textit{that} different markets experience different rates of cannibalisation but not \textit{why}. For this thesis, the distinction matters: a model that cannot explain cross-market variation cannot project capture values under future market configurations where the generation mix, flexibility endowment, and interconnection capacity differ from the historical sample. A parameterised model that accepts these characteristics as explicit inputs would enable two capabilities the literature lacks: forward-looking projections where historical fixed effects no longer apply, and spatial mapping of capture values by assigning each offshore grid cell to its nearest bidding zone. This model bridges Gaps~1 and~2, making both the cross-basin comparison and the revenue-augmented spatial assessment possible within a single framework.
+
+\vspace{4pt}
+
+\subsection{Research Objectives}\label{sec:objectives}
+
+Addressing these three gaps requires working backwards from the spatial assessment (Gap~2) through the modelling tool it depends on (Gap~3) to the empirical comparison it enables (Gap~1). This thesis pursues five objectives, beginning with the foundational model and building outward to the spatial and comparative analyses it supports:
+
+\begin{enumerate}
+    \item \textit{Develop a parameterised wind-price model} (addressing Gap~3) that captures the relationship between wind penetration and capture value as a function of observable market characteristics: generation mix composition, interconnection capacity, and flexibility endowment. The model extends the Stiewe et al. \cite{Stiewe2025} panel framework by replacing zone fixed effects with explicit market parameters, enabling application to bidding zones and scenarios beyond the historical sample.
+
+    \item \textit{Map wind energy potentials} across the North Sea and Baltic Sea using ERA5-derived hourly capacity factors at each candidate offshore location, accounting for spatial correlation patterns, wake effects, and the bias corrections identified in the reanalysis literature \cite{Gandoin2024, Staffell2016}.
+
+    \item \textit{Compare capture values across both basins} (addressing Gap~1) under current conditions and under the expansion scenarios defined by the Esbjerg (150~GW North Sea) and Marienborg (19.6~GW Baltic) Declarations, using the parameterised model to project how capture values evolve as each market moves along the cannibalisation curve.
+
+    \item \textit{Integrate capture value into the GIS-based spatial assessment framework} (addressing Gap~2), overlaying revenue estimates onto the physical potential maps alongside capacity factor, water depth, distance to coast, and LCOE, and testing whether this additional dimension changes the ranking of candidate sites.
+
+    \item \textit{Assess the diversification value} of spreading offshore wind investment across both basins rather than concentrating it in the North Sea, quantifying whether the Baltic's combination of lower correlation, hydro-buffered markets, and earlier position on the penetration curve translates into a measurable portfolio benefit for capture value.
+\end{enumerate}
+
+Together, these objectives deliver a spatially explicit assessment of where offshore wind generates the most revenue, not merely the most energy. For an industry committing hundreds of billions of euros to North Sea and Baltic Sea capacity over the next two decades, the distinction between these two quantities will determine which projects survive without subsidy and which do not.

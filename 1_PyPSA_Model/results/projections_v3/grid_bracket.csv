@@ -1,0 +1,7 @@
+scenario,CV_corr_frozen,CV_corr_vopt,CV_raw_frozen,CV_raw_vopt,bracket_width
+2030-NT-balticBaseline,0.7267,0.7148,0.7905,0.7781,-0.0119
+2030-NT-balticHigh,0.6772,0.6866,0.7527,0.7619,0.0094
+2040-NT-balticBaseline,0.3895,0.5829,0.4709,0.6638,0.1934
+2040-NT-balticHigh,0.2584,0.4698,0.3622,0.5744,0.2114
+2040-DE-balticHigh,0.514,0.5722,0.6025,0.6624,0.0582
+2040-GA-balticHigh,0.4734,0.5684,0.5657,0.6594,0.095

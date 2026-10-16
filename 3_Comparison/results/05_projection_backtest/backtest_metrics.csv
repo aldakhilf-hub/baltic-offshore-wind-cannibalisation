@@ -1,0 +1,4 @@
+model,MAE,RMSE,bias,r,U_bias,U_var,U_cov
+"Regression, realised features",0.0531,0.0664,0.0271,0.2832,0.1667,0.1145,0.7188
+"Regression, projected features",0.0493,0.0633,0.0191,0.1627,0.0909,0.328,0.5812
+System model,0.049,0.0715,0.0413,0.2998,0.334,0.1612,0.5049

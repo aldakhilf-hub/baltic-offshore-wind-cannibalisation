@@ -1,0 +1,8 @@
+feature,NS_absSHAP,NS_signed,NS_featmean,Baltic_absSHAP,Baltic_signed,Baltic_featmean,feat_to_CV_sign,NS_imp%,Baltic_imp%
+Corr_VRE,0.017,0.0064,0.5551,0.0237,-0.0058,0.6281,-,30.2,34.4
+Flexibility_Index,0.0105,0.0018,0.0679,0.0113,-0.0008,0.1285,+,18.7,16.4
+Corr_Load,0.0102,0.0,-0.0188,0.0108,-0.0003,-0.0169,+,18.2,15.7
+Interconnection_Index,0.0077,-0.0001,0.273,0.0099,-0.0008,0.2197,+,13.7,14.3
+VRE_MarketShare,0.007,-0.0002,0.3351,0.0089,0.0,0.2457,-,12.5,12.9
+Carbon_Price,0.0022,0.0001,42.8358,0.0026,-0.0001,46.7646,+,4.0,3.8
+Gas_Price,0.0015,0.0,37.1589,0.0018,-0.0001,40.208,+,2.7,2.6

@@ -1,0 +1,17 @@
+# Corrected archetype table for the lit-review rewrite (2026-06-12).
+# measured_CV_2023_24 = this thesis's Track-2 data (VWF output x observed zone price,
+# all farms incl. planned sites; FI/SE rest on one operational farm each).
+# lit_review_claimed = the old Section-3 table ('approx 2024 values' — actually
+# Hirth-2013-era theory + stylised priors; superseded by the measured column).
+country,basin,lit_review_claimed,measured_CV_2023_24,farm_months
+PL,BS,0.95–1.00,0.922,48
+DE,NS,0.76–0.85,0.904,144
+NL,NS,0.85–0.90,0.89,96
+FR,NS,—,0.885,24
+BE,NS,—,0.883,72
+LV,BS,~1.00,0.88,24
+LT,BS,~1.00,0.869,24
+EE,BS,~1.00,0.86,24
+DK,NS/BS,0.80–0.90,0.822,168
+SE,BS,0.90–0.95,0.729,24
+FI,BS,0.90–0.95,0.568,24

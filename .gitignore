@@ -1,0 +1,50 @@
+# --- credentials. Never commit these.
+.entsoerc
+*.lic
+gurobi.log
+.env
+.env.*
+
+# --- python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+*.egg-info/
+
+# --- os and editor noise
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+.idea/
+.vscode/
+
+# --- LaTeX build products. The sources and the final PDF are tracked.
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+9_Thesis_LaTeX/main.pdf
+
+# --- solved PyPSA networks and large intermediate caches.
+# One corrected network is tracked on purpose (results/ntc_correction).
+# Anything else of this kind is regenerable and stays out.
+*.nc.tmp
+.snakemake/
+resources/
+cutouts/
+
+# --- scratch
+scratch/
+tmp/
+*.bak

@@ -1,0 +1,8 @@
+,pct_rows_outside
+feature_1_Corr_VRE,0.2
+feature_2_Corr_Load,0.0
+feature_3_VRE_MarketShare,0.0
+feature_7_Interconnection_Index,0.0
+feature_4_Gas_Price,0.0
+feature_5_Carbon_Price,41.7
+feature_6_Flexibility_Index,0.0

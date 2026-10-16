@@ -1,0 +1,4 @@
+fit,2030-NT-balticBaseline,2030-NT-balticHigh,2040-DE-balticHigh,2040-GA-balticHigh,2040-NT-balticBaseline,2040-NT-balticHigh
+raw (no correction),0.83,0.818,0.479,0.46,0.573,0.481
+canonical (14),0.769,0.747,0.378,0.356,0.5,0.37
+drop DK2,0.785,0.773,0.431,0.412,0.528,0.433

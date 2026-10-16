@@ -1,0 +1,5 @@
+basin,grid,CV_raw,E0_share,CV_pos,farm,state,farm_pct_of_loss,state_pct_of_loss
+North Sea,frozen,0.573,0.467,1.075,0.467,-0.04,109.0,-9.0
+Baltic,frozen,0.471,0.185,0.578,0.185,0.344,35.0,65.0
+North Sea,optimal,0.637,0.36,0.995,0.36,0.003,99.0,1.0
+Baltic,optimal,0.664,0.331,0.993,0.331,0.005,99.0,1.0

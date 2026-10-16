@@ -1,0 +1,209 @@
+% --------------------------------------------------------------------
+% Preamble
+% --------------------------------------------------------------------
+\documentclass[letterpaper, 11pt]{article}%{scrartcl}	% KOMA ,twoside
+\usepackage[version=4]{mhchem}
+\usepackage{tabularx}
+\usepackage{booktabs} % For professional table lines
+\usepackage{siunitx}  % For formatting units and aligning numbers
+\usepackage{graphicx} % Required for the \resizebox command
+\usepackage{comment}
+\usepackage{tabularx} % Add this to your preamble
+\usepackage{notoccite}
+\usepackage[table]{xcolor} % Optional, for shading
+\usepackage{eurosym} % For the \euro symbol
+\sisetup{group-separator={,}, table-figures-decimal=2} % Setup for number formatting
+\input{AAinput}
+
+\begin{document}
+% --------------- ---------TITLE PAGE --------------------------------------------
+\newpage
+\thispagestyle{empty}
+\fancyhf{}
+\setlength\headheight{14pt}
+\renewcommand{\headrulewidth}{0pt}
+
+\begin{center}
+
+\vspace*{1cm}
+
+\includegraphics[height=5cm]{Imperial_College_London_crest.png}
+
+\vspace{1.5cm}
+
+\LARGE \textbf{Modelling Wind Energy Potentials and Energy Pricing Between Northern and Baltic Sea}
+
+\vspace{1.2cm}
+
+\large{MECH70038 - MSc Research Project Literature Review}
+
+\vspace{0.8cm}
+
+\normalsize{Faisal Bindakhil}\\[0.3cm]
+\normalsize{Supervisors: Ruslan Galimov \& Adam Hawkes}
+
+\end{center}
+
+\vfill
+
+\begin{flushright}
+\begin{tabular}{l}
+\textbf{02089034} \\
+\today \\
+\end{tabular}
+\end{flushright}
+
+% \vspace{1.4cm}
+
+% \begin{flushright}
+% \begin{tabular}{c}
+% \makebox[2.5in]{\hrulefill}\\    Firma Profesor Guía\
+% \end{tabular}
+% \end{flushright}
+\newpage
+
+\pagestyle{fancy}
+\setlength\headheight{37pt}
+\renewcommand{\headrulewidth}{0.5pt}
+\fancyhf{}
+\fancyhead[L]{\small \rm \textit{Section \rightmark}}
+\fancyfoot[L]{\small \rm \textit{MECH70034 - MSc Research Project}} %Izquierda
+\fancyfoot[R]{\small \rm \textit{Sustainable Energy Futures}} %Derecha
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\setlength{\headheight}{30pt}
+
+
+% -----------------------------------------------------------------------------
+% Begin document
+% -----------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+
+\fancyhead[L]{\small \rm \textit{Section \rightmark}} %Izquierda
+\fancyhead[R]{\small \rm \textbf{\thepage}} %Derecha
+
+\fancyfoot[L]{\small \rm \textit{MSc Research Project}} %Izquierda
+\fancyfoot[R]{\small \rm \textit{Sustainable Energy Futures}} %Derecha
+%\fancyfoot[C]{\thepage} %Centro
+
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\setlength{\headheight}{30pt}
+
+
+
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+\begin{abstract}
+\noindent
+Offshore wind capacity in Europe is projected to grow from approximately 36~GW today to over 300~GW by 2050, with the North Sea and Baltic Sea as the two principal basins. As deployment scales, wholesale electricity prices during high-wind hours are driven down by the merit order effect, eroding the revenue that each turbine earns. This cannibalisation problem is well documented at the national level but has not been systematically compared across the two basins, which differ in wind resource strength, spatial correlation, generation mix, system flexibility, and market design. This literature review synthesises research across three domains that have developed largely in isolation: wind resource modelling, electricity market economics, and GIS-based spatial assessment. It finds that no existing framework integrates all three at the resolution needed to evaluate where offshore wind generates the most revenue, not merely the most energy. Three gaps are identified: the absence of a cross-basin capture value comparison, the exclusion of market value from spatial assessment frameworks, and the lack of a parameterised wind-price model that explains why cannibalisation severity differs across markets. This thesis proposes to address these gaps by developing a model that replaces fixed effects with explicit market parameters, coupling it with hourly wind generation profiles and overlaying the results onto a GIS framework to produce the first revenue-augmented spatial assessment of offshore wind potential across both basins.
+\end{abstract}
+\thispagestyle{empty}
+\newpage
+
+% --------------- LIST OF FIGURES ----------------
+\listoffigures
+\thispagestyle{empty}
+\newpage
+
+% --------------- LIST OF TABLES -----------------
+\listoftables
+\thispagestyle{empty}
+\newpage
+
+% --------------- NOMENCLATURE -------------------
+\section*{Nomenclature}
+\thispagestyle{empty}
+\addcontentsline{toc}{section}{Nomenclature}
+
+\subsection*{Abbreviations}
+\begin{tabular}{@{}l l@{}}
+ACER & Agency for the Cooperation of Energy Regulators \\
+CCGT & Combined Cycle Gas Turbine \\
+CfD & Contract for Difference \\
+CHP & Combined Heat and Power \\
+ECMWF & European Centre for Medium-Range Weather Forecasts \\
+ENTSO-E & European Network of Transmission System Operators for Electricity \\
+ERA5 & ECMWF Reanalysis version 5 \\
+EU & European Union \\
+EUPHEMIA & EU Pan-European Hybrid Electricity Market Integration Algorithm \\
+FiT & Feed-in Tariff \\
+GIS & Geographic Information System \\
+IEA & International Energy Agency \\
+IRENA & International Renewable Energy Agency \\
+LCOE & Levelised Cost of Energy \\
+LOESS & Locally Estimated Scatterplot Smoothing \\
+MERRA-2 & Modern-Era Retrospective Analysis for Research and Applications v2 \\
+MOE & Merit Order Effect \\
+NEWA & New European Wind Atlas \\
+NORA3 & Norwegian Reanalysis version 3 \\
+ONDP & Offshore Network Development Plan \\
+PLEXOS & Planning and Execution Optimisation System \\
+PyPSA & Python for Power System Analysis \\
+SDAC & Single Day-Ahead Coupling \\
+VRE & Variable Renewable Energy \\
+\end{tabular}
+
+\vspace{0.5cm}
+\subsection*{Bidding Zone Codes}
+\begin{tabular}{@{}l l@{}}
+BE & Belgium \\
+DE-LU & Germany-Luxembourg \\
+DK1, DK2 & Denmark West, Denmark East \\
+EE & Estonia \\
+FI & Finland \\
+LT & Lithuania \\
+LV & Latvia \\
+NL & Netherlands \\
+NO1--NO5 & Norway zones 1--5 \\
+PL & Poland \\
+SE1--SE4 & Sweden zones 1--4 \\
+UK & United Kingdom \\
+\end{tabular}
+
+
+\newpage
+\thispagestyle{empty}
+
+
+\subsection*{Symbols and Units}
+\begin{tabular}{@{}l l@{}}
+$g_t$ & Wind generation at hour $t$ (MWh) \\
+GW & Gigawatt ($10^9$~W) \\
+$L$ & Decorrelation length (km) \\
+MWh & Megawatt-hour \\
+$P$ & Power output (W) \\
+$p_t$ & Spot electricity price at hour $t$ (\euro/MWh) \\
+$\bar{p}$ & Time-averaged baseload price (\euro/MWh) \\
+TWh & Terawatt-hour ($10^{12}$~Wh) \\
+$v$ & Wind speed (m\,s$^{-1}$) \\
+VF & Value Factor (dimensionless) \\
+WP & Wind Penetration (\%) \\
+\end{tabular}
+
+
+
+\newpage
+
+\setcounter{page}{1}
+
+\input{01Introduction}
+
+\input{02ValueProblem}
+
+\input{03RegionalDrivers}
+
+\input{04Modelling}
+
+\input{05ResearchGap}
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+
+\end{document}

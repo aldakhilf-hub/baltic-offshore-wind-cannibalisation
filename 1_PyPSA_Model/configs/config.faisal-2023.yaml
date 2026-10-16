@@ -1,0 +1,224 @@
+# =============================================================================
+# PyPSA-Eur config for North Sea / Baltic offshore wind value thesis
+# Faisal Aldakhil — MSc Sustainable Energy Futures, Imperial College London
+#
+# Year:        2023 (headline calibration year, post-energy-crisis)
+# Geography:   14 countries spanning North Sea + Baltic + Nordics
+# Clusters:    30 (enough resolution for offshore bidding zones to separate)
+# Resolution:  hourly (8760 snapshots)
+#
+# Drop this file into config/ inside the pypsa-eur clone and invoke with:
+#   snakemake -call --configfile config/config.faisal-2023.yaml \
+#       results/faisal-2023/networks/base_s_30_elec_.nc
+#
+# Verify every key against your local config.default.yaml — the schema
+# changes between PyPSA-Eur releases.
+# =============================================================================
+
+run:
+  name: "faisal-2023"
+  shared_resources:
+    policy: false
+  disable_progressbar: false
+
+# -----------------------------------------------------------------------------
+# Scenario wildcards. {clusters} flows through every rule's output filename.
+# -----------------------------------------------------------------------------
+# NOTE: the {ll} and {simpl} wildcards were removed from PyPSA-Eur (this repo is
+# v2026.02.0). The transmission limit is now set via electricity.transmission_limit
+# below — the old `ll: ["v1.0"]` here was silently ignored (solves ran at the
+# default `vopt`, i.e. optimal transmission expansion). Fixed 2026-06-11.
+scenario:
+  clusters: [30]
+  opts: [""]
+
+# -----------------------------------------------------------------------------
+# Geography. Every country touching the North Sea or Baltic, plus Norway.
+# Dropping NO breaks the thesis (reservoir hydro flexibility argument).
+# -----------------------------------------------------------------------------
+countries:
+  - GB    # Great Britain
+  - IE    # Ireland
+  - FR    # France
+  - BE    # Belgium
+  - NL    # Netherlands
+  - DE    # Germany
+  - DK    # Denmark
+  - "NO"  # Norway          <-- non-negotiable (quoted: unquoted NO parses as False in YAML)
+  - SE    # Sweden
+  - FI    # Finland
+  - EE    # Estonia
+  - LV    # Latvia
+  - LT    # Lithuania
+  - PL    # Poland
+
+# -----------------------------------------------------------------------------
+# Time horizon. Full calendar year 2023, hourly. 8760 snapshots.
+# -----------------------------------------------------------------------------
+snapshots:
+  start: "2023-01-01"
+  end:   "2024-01-01"
+  inclusive: "left"
+
+# -----------------------------------------------------------------------------
+# Weather cutout. Bounding box that contains all 14 countries' coastlines.
+# Build once (~10–30 min depending on connection) then cached on disk.
+# -----------------------------------------------------------------------------
+data:
+  cutout:
+    source: build       # build via CDS (no 2019 prebuilt archive exists)
+    version: latest
+
+atlite:
+  default_cutout: europe-2023-era5
+  cutouts:
+    europe-2023-era5:
+      module: era5
+      x: [-11.0, 32.0]   # lon: west of Ireland → east of Estonia
+      y: [ 47.0, 71.5]   # lat: northern France → North Cape
+      dx: 0.3
+      dy: 0.3
+      time: ["2023-01-01", "2023-12-31"]
+
+# -----------------------------------------------------------------------------
+# Electricity sector configuration.
+# -----------------------------------------------------------------------------
+electricity:
+  voltages: [220., 300., 380.]
+  base_network: "entsoegridkit"
+  co2limit_enable: false      # historical year — let prices clear, no cap
+  transmission_limit: v1.0    # freeze line volume at today's level (historical dispatch)
+  # Year-correct fleet (audit fix 2026-06-11). The default filter keeps the
+  # ~2025 fleet, and estimate_renewable_capacities can only top capacities UP
+  # to the IRENASTAT year total, never scale them down — so without this
+  # filter both baselines carried an identical, current-day fleet.
+  powerplants_filter: "(DateOut >= 2023 or DateOut != DateOut) and (DateIn <= 2023 or DateIn != DateIn)"
+
+  extendable_carriers:
+    Generator: []             # historical: no investment in this year
+    StorageUnit: []
+    Store: []
+    Link: []
+
+  renewable_carriers:
+    - onwind
+    - offwind-ac
+    - offwind-dc
+    - solar
+    - hydro          # ror + PHS + reservoir hydro driven by renewable.hydro.carriers
+
+  conventional_carriers:
+    - nuclear
+    - oil
+    - OCGT
+    - CCGT
+    - coal
+    - lignite
+    - geothermal
+    - biomass
+
+  # Reference year for the installed renewable fleet. Must match the run year:
+  # this was 2019 (and `from_opsd` is a removed key, silently ignored), so the
+  # 2023 calibration previously ran a wrong-vintage fleet. Fixed 2026-06-11.
+  estimate_renewable_capacities:
+    enable: true
+    from_powerplantmatching: true
+    year: 2023
+
+# -----------------------------------------------------------------------------
+# Renewable resource modelling. Hydro is the one to double-check —
+# this is where Norwegian reservoir flexibility enters the model.
+# -----------------------------------------------------------------------------
+renewable:
+  hydro:
+    cutout: europe-2023-era5
+    carriers: [ror, PHS, hydro]
+    PHS_max_hours: 6
+    hydro_max_hours: "energy_capacity_totals_by_country"
+    flatten_dispatch: false
+  onwind:
+    cutout: europe-2023-era5
+  offwind-ac:
+    cutout: europe-2023-era5
+  offwind-dc:
+    cutout: europe-2023-era5
+  solar:
+    cutout: europe-2023-era5
+
+# -----------------------------------------------------------------------------
+# Costs. Tech-cost year 2020 kept identical to the 2019 config so the two
+# baselines differ only in weather/fleet/fuel-year. 2023 fuel prices are NOT
+# 2020 defaults — they are overridden via custom_cost_fn below, and the CO2
+# price is set explicitly under emission_prices.
+# -----------------------------------------------------------------------------
+costs:
+  year: 2020
+  version: v0.6.2
+  rooftop_share: 0.14
+  fill_values:
+    FOM: 0
+    VOM: 0
+    efficiency: 1
+    fuel: 0
+    investment: 0
+    lifetime: 25
+  emission_prices:
+    enable: true   # actually apply the price to marginal costs
+    co2: 84.0      # 2023 EUA average, approx EUR/tCO2 (record high)
+  # Fuel-price overrides go through custom_cost_fn (the `fuel` parameter),
+  # NOT costs.marginal_cost — the latter is recomputed from fuel for thermal
+  # plants in add_electricity and so any marginal_cost override is ignored.
+  custom_cost_fn: data/custom_costs_2023.csv
+
+# -----------------------------------------------------------------------------
+# Clustering. 30 buses, weighted toward technologies that matter for
+# offshore wind price formation.
+# -----------------------------------------------------------------------------
+clustering:
+  focus_weights:
+    DE: 0.18
+    GB: 0.12
+    "NO": 0.10
+    DK: 0.08
+    NL: 0.07
+    SE: 0.07
+  aggregation_strategies:
+    generators:
+      p_nom_max: sum
+      p_nom_min: sum
+  consider_efficiency_classes: false
+
+# -----------------------------------------------------------------------------
+# Solver. Gurobi via Imperial academic licence. HiGHS will not finish.
+# -----------------------------------------------------------------------------
+solving:
+  options:
+    clip_p_max_pu: 1.0e-2
+    load_shedding:
+      enable: true
+      default_cost: 100000
+      all_carriers: true
+      carriers: {}
+    noisy_costs: true
+    skip_iterations: true
+    track_iterations: false
+  solver:
+    name: gurobi
+    threads: 8
+    method: 2              # barrier
+    crossover: 0
+    BarConvTol: 1.0e-6
+    FeasibilityTol: 1.0e-6
+    AggFill: 0
+    PreDual: 0
+    GURO_PAR_BARDENSETHRESH: 200
+
+# -----------------------------------------------------------------------------
+# Output. Only need solved network for now. Add summary plots later.
+# -----------------------------------------------------------------------------
+enable:
+  retrieve: true
+  retrieve_databundle: true
+  retrieve_cost_data: true
+  retrieve_cutout: true
+  build_cutout: false

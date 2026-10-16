@@ -1,0 +1,4 @@
+regime,n,regression_err,pypsa_err,divergence
+in-sample 2023-24 (dense data),10,0.0117,0.0566,0.0617
+2030 projection,2,,,0.035009523118058494
+2040 projection,2,,,0.3480613839814138

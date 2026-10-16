@@ -1,0 +1,67 @@
+\documentclass[letterpaper, 11pt]{article}
+\input{AAinput}
+\graphicspath{{figures/}}
+
+% ============================================================================
+% Modelling Wind Energy Potentials and Energy Pricing Between the
+% Northern and Baltic Sea
+% Faisal Bindakhil · MSc Sustainable Energy Futures · Imperial College London
+%
+% Structure per 8_THESIS_SKELETON.md. Word budget 20,000:
+%   01 Introduction        ~1,800
+%   02 Literature review   ~4,500
+%   03 Methodology         ~4,500
+%   04 Results             ~5,500
+%   05 Discussion          ~2,200
+%   06 Conclusion            ~800
+% Figures are referenced by file name only; all live in figures/.
+% Style: no em dashes, concise, every line earns its place.
+% ============================================================================
+
+\begin{document}
+
+% ----------------------------- title page ----------------------------------
+\begin{titlepage}
+\centering
+% Crest shown if present in figures/; absence never blocks compilation.
+\IfFileExists{figures/Imperial_College_London_crest.png}
+  {\includegraphics[height=4.5cm]{Imperial_College_London_crest.png}\\[1.2cm]}
+  {\vspace*{1.5cm}}
+{\Large Modelling Wind Energy Potentials and Energy Pricing\\
+Between the Northern and Baltic Sea\\[1.5cm]}
+{\large Faisal Bindakhil\\[0.4cm]}
+A thesis presented to Imperial College London in partial fulfilment of the
+requirements for the degree of Master of Science in Sustainable Energy
+Futures\\[1.0cm]
+Energy Futures Lab\\
+\today
+\end{titlepage}
+
+% ----------------------------- front matter --------------------------------
+\input{00_abstract}
+\newpage
+\input{00_acknowledgements}
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\listoftables
+\newpage
+
+% ----------------------------- chapters ------------------------------------
+\input{01_introduction}
+\input{02_literature}
+\input{03_methodology}
+\input{04_results}
+\input{05_discussion}
+\input{06_conclusion}
+
+% ----------------------------- back matter ---------------------------------
+\newpage
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\appendix
+\input{07_appendices}
+
+\end{document}

@@ -1,0 +1,21 @@
+ANALYTICAL CAPTURE-VALUE MODEL (closed form, standardised features)
+  in-sample R2 = 0.377  (7 RFE-selected degree-2 terms)
+  features standardised: z = (x - mean) / std  (means/stds below)
+
+  CV = 0.9173
+       -0.0386 * Carbon_Price
+       -0.0335 * Corr_VRE
+       -0.0174 * Corr_VRE Carbon_Price
+       +0.0144 * Corr_Load
+       -0.0127 * Corr_VRE^2
+       +0.0125 * Gas_Price
+       -0.0123 * VRE_MarketShare
+
+  standardisation (mean, std) per raw feature:
+       Corr_VRE                 mean=      0.5917  std=      0.2303
+       Corr_Load                mean=     -0.0178  std=      0.1292
+       VRE_MarketShare          mean=      0.2903  std=      0.1911
+       Gas_Price                mean=     38.6868  std=     40.3459
+       Carbon_Price             mean=     44.8046  std=     28.7801
+       Flexibility_Index        mean=      0.0982  std=      0.2370
+       Interconnection_Index    mean=      0.2463  std=      0.1000

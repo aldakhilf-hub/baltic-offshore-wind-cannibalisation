@@ -1,0 +1,9 @@
+basin,trajectory,horizon,cv_analytical
+Baltic,BEST,2030,0.825
+Baltic,BEST,2040,0.717
+Baltic,HIGH,2030,0.646
+Baltic,HIGH,2040,0.433
+NS,BEST,2030,0.84
+NS,BEST,2040,0.786
+NS,HIGH,2030,0.454
+NS,HIGH,2040,0.466

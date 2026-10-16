@@ -1,0 +1,36 @@
+name,country,bidding_zone,basin,lat,lon,capacity_MW,commissioning_year,status,source_notes
+# North Sea — operational
+Horns Rev 3,DK,DK1,NS,55.69,7.73,407,2019,operational,Vattenfall public site
+Anholt,DK,DK1,NS,56.60,11.21,400,2013,operational,Orsted public site
+Borssele 1-2,NL,NL,NS,51.70,3.02,752,2020,operational,Orsted public site
+Borssele 3-4,NL,NL,NS,51.70,2.95,731,2020,operational,Blauwwind / Crown Estate
+Hollandse Kust Zuid,NL,NL,NS,52.30,4.20,1525,2023,operational,Vattenfall / CrossWind
+Gemini,NL,NL,NS,54.04,5.97,600,2017,operational,Gemini consortium
+Borkum Riffgrund 2,DE,DE_LU,NS,53.97,6.55,450,2019,operational,Orsted public site
+Veja Mate,DE,DE_LU,NS,54.31,5.86,402,2017,operational,Highland Group / Veja Mate
+Hornsea 1,GB,GB,NS,53.88,1.79,1218,2019,operational,Orsted public site
+Hornsea 2,GB,GB,NS,53.95,1.90,1320,2022,operational,Orsted public site
+C-Power,BE,BE,NS,51.55,2.93,325,2013,operational,Belgian Offshore Platform
+Norther,BE,BE,NS,51.50,2.95,370,2019,operational,Belgian Offshore Platform
+Saint-Brieuc,FR,FR,NS,48.82,-2.55,496,2024,operational,Ailes Marines / Iberdrola
+# North Sea — planned / energy islands
+Dogger Bank A,GB,GB,NS,54.75,1.85,1200,2025,under_construction,SSE Renewables / Equinor
+Princess Elisabeth Zone,BE,BE,NS,51.50,2.60,3500,2030,planned,Elia / FOD Economie 2024
+North Sea Energy Island,DK,DK1,NS,56.20,7.50,3000,2033,planned,Danish Energy Agency (3 GW phase 1)
+# Baltic — operational
+Rodsand 1 (Nysted),DK,DK2,Baltic,54.55,11.71,165,2003,operational,Orsted public site
+Rodsand 2,DK,DK2,Baltic,54.55,11.80,207,2010,operational,E.ON Climate & Renewables
+Kriegers Flak DK,DK,DK2,Baltic,54.97,12.90,605,2021,operational,Vattenfall public site
+Wikinger,DE,DE_LU,Baltic,54.83,14.07,350,2017,operational,Iberdrola public site
+Arkona,DE,DE_LU,Baltic,54.78,14.12,385,2019,operational,Orsted / E.ON
+Baltic 2,DE,DE_LU,Baltic,54.99,13.16,288,2015,operational,EnBW public site
+Baltic Eagle,DE,DE_LU,Baltic,54.79,13.92,476,2024,operational,Iberdrola public site
+Lillgrund,SE,SE_4,Baltic,55.51,12.78,110,2007,operational,Vattenfall public site
+# Baltic — planned (Marienborg + national strategies)
+Bornholm Energy Island,DK,DK2,Baltic,55.10,14.60,3000,2032,planned,Marienborg Declaration / DEA
+Saare-Liiv (Saaremaa offshore),EE,EE,Baltic,58.30,22.50,3000,2035,planned,Eesti Energia / 5 Energy Islands
+Liivi Bay,LV,LV,Baltic,57.80,23.50,1000,2030,planned,Latvia National Energy Plan
+Klaipeda offshore,LT,LT,Baltic,55.80,20.60,1400,2030,planned,LT Ministry of Energy
+Baltic Power,PL,PL,Baltic,55.00,17.40,1140,2026,under_construction,Orlen / Northland Power
+Baltyk II / III,PL,PL,Baltic,55.05,17.20,1440,2027,planned,Polenergia / Equinor
+FEW Baltic II / Olhava,FI,FI,Baltic,64.80,24.50,1280,2030,planned,Vattenfall / EPV

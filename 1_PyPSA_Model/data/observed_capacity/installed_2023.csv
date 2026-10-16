@@ -1,0 +1,28 @@
+country,entsoe_type,MW_2023
+BE,Solar,6474.96
+BE,Wind Onshore,3053.18
+BE,Wind Offshore,2262.1
+DE,Solar,63366.03
+DE,Wind Onshore,57741.55
+DE,Wind Offshore,8128.82
+DK,Solar,2321.5
+DK,Wind Onshore,4710.5
+DK,Wind Offshore,2305.7
+EE,Solar,510.0
+EE,Wind Onshore,317.0
+FI,Solar,18.0
+FI,Wind Onshore,5121.0
+FR,Solar,14638.79
+FR,Wind Onshore,20841.9
+FR,Wind Offshore,493.5
+IE,Wind Onshore,2984.28
+LT,Solar,578.0
+LT,Wind Onshore,814.0
+LV,Solar,63.0
+LV,Wind Onshore,165.0
+NL,Solar,24302.0
+NL,Wind Onshore,6757.0
+NL,Wind Offshore,4739.0
+NO,Wind Onshore,5129.8
+PL,Solar,10643.2
+PL,Wind Onshore,8977.73

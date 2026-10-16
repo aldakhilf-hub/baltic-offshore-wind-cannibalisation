@@ -1,0 +1,2 @@
+comparison,mean_diff,lo,hi,n_zones
+"Regression, zone held out minus System model",-0.0051,-0.0193,0.0091,4

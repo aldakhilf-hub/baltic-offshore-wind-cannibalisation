@@ -1,0 +1,8 @@
+feature,mean_abs_shap,pct_of_total
+Carbon_Price,0.0322,28.9822
+Corr_VRE,0.0253,22.7651
+Gas_Price,0.0158,14.2691
+Corr_Load,0.0118,10.5839
+VRE_MarketShare,0.0105,9.4938
+Flexibility_Index,0.0081,7.3086
+Interconnection_Index,0.0073,6.5974

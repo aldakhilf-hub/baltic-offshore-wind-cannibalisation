@@ -1,0 +1,6 @@
+zone,pypsa_err,regr_err,hydro_coupled,zone_size
+DK2,0.142,0.004,yes (SE/NO),small
+DK1,0.083,-0.002,yes (NO/SE),small
+BE,0.031,-0.007,no,small
+DE,0.015,-0.005,no,large
+NL,0.01,-0.008,no,medium

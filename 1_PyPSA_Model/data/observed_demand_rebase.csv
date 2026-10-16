@@ -1,0 +1,19 @@
+# Observed annual demand (ENTSO-E, via 2_Regression_Model/data/entsoe_strandA/load).
+# rebase_2019_over_base converts the 2023-base network loads to a 2019 base so that
+# TYNDP growth-vs-2019 factors apply on the correct denominator (1.07 demand fix).
+# GB base_year=2021: ENTSO-E GB load reporting ends 2021 (post-Brexit proxy).
+country,demand_2019_TWh,demand_base_TWh,base_year,rebase_2019_over_base
+BE,84.95,78.91,2023,1.0766
+DE,502.52,463.08,2023,1.0852
+DK,33.54,34.48,2023,0.9727
+EE,8.23,8.07,2023,1.0195
+FI,83.44,78.95,2023,1.0569
+FR,467.63,425.69,2023,1.0985
+GB,298.0,304.81,2021,0.9777
+IE,36.93,39.89,2023,0.9258
+LT,12.17,11.72,2023,1.039
+LV,7.23,6.47,2023,1.1172
+NL,113.9,109.4,2023,1.0412
+NO,133.47,134.49,2023,0.9924
+PL,168.92,166.1,2023,1.017
+SE,136.43,130.62,2023,1.0445

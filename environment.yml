@@ -1,0 +1,60 @@
+# Curated environment for this project. Installs the whole stack, including
+# the heavy geospatial and power-system libraries needed by Tracks 1 and 3.
+#
+#   mamba env create -f environment.yml     (conda works too, mamba is faster)
+#   mamba activate baltic-wind
+#
+# If you only need the fast surrogate model or the regression track, use
+# requirements-light.txt instead. It is a much smaller install and needs no
+# conda, no Gurobi and no geospatial stack.
+#
+# Versions are the ones the thesis results were produced with, recorded in
+# Appendix of the thesis. environment.lock.yml holds the full transitive
+# freeze from the original machine (macOS arm64) if you need exact parity.
+name: baltic-wind
+channels:
+  - conda-forge
+  - gurobi
+dependencies:
+  - python=3.13
+  # --- power system model (Track 1)
+  - pypsa=1.2.0
+  - atlite=0.6.1
+  - snakemake=9.20.0
+  - linopy
+  # --- solver. Gurobi needs a licence; see README. A free academic licence
+  #     covers the thesis runs. Swap in HiGHS (bundled with linopy) for small
+  #     problems, though the 30-cluster hourly solves were never tested on it.
+  - gurobi=13.0.2
+  # --- machine learning (Track 2 and the surrogate)
+  - scikit-learn=1.8.0
+  - pandas=2.3.3
+  - numpy=2.4.3
+  - scipy=1.17.1
+  - statsmodels
+  # --- geospatial (maps, cost field, bathymetry)
+  - geopandas=1.1.3
+  - cartopy=0.25.0
+  - rasterio=1.5.0
+  - xarray=2025.6.1
+  - netcdf4
+  - rioxarray
+  - shapely
+  - pyproj
+  - scipy
+  # --- market data
+  - entsoe-py=0.8.0
+  - requests
+  - pyyaml
+  # --- figures and documents
+  - matplotlib=3.10.9
+  - pillow
+  - python-pptx
+  - adjusttext
+  - pip
+  - pip:
+      # xgboost and shap come from pip to match the recorded versions.
+      # On macOS xgboost also needs the OpenMP runtime: brew install libomp
+      - xgboost==3.2.0
+      - shap==0.52.0
+      - pypdf

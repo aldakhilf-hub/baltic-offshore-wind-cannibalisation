@@ -1,0 +1,4 @@
+fit,pen,R2,n,n_runs,pen2,ci_lo,ci_hi,verdict,slope_in_support,slope_out_of_support,ols_slope,pypsa_slope_at_pen02
+linear,0.4360251332712618,0.5055576787426317,1122.0,76.0,,,,,,,,
+quadratic,0.9470505961610327,0.5808599422389387,1122.0,76.0,-0.19262118490383348,-0.2145386003278785,-0.169471734260177,CONCAVE: loss SATURATES -> prediction P3 as stated is REFUTED,,,,
+tree_partial_dependence,,,,,,,,,-0.020398324610216973,-1.8029152212199786e-16,-0.05820133934991271,-0.8700021221994994

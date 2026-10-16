@@ -1,0 +1,9 @@
+drop_kind,dropped,n,slope,ci_lo,ci_hi,excludes_zero,r2,pen_max
+leave-one-zone-out,BE,11,0.2505,0.0598,0.4413,True,0.4951,0.4983
+leave-one-zone-out,DE,11,0.2624,0.0496,0.4752,True,0.4636,0.4983
+leave-one-zone-out,DK1,11,0.2235,0.0427,0.4043,True,0.4649,0.4983
+leave-one-zone-out,DK2,11,0.0454,-0.214,0.3047,False,0.0171,0.3059
+leave-one-zone-out,NL,12,0.2775,0.1765,0.3785,True,0.7894,0.4983
+leave-one-year-out,2019,10,0.3025,0.112,0.493,True,0.6263,0.4983
+leave-one-year-out,2023,9,0.1997,-0.0037,0.4031,False,0.4349,0.4675
+leave-one-year-out,2024,9,0.1947,-0.0359,0.4253,False,0.3627,0.4983
