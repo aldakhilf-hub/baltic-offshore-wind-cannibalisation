@@ -184,14 +184,14 @@ the lit-review-committed contribution ("Gap 3"). *Full detail: `2_Regression_Mod
 
 1. **Pull the data** (`2.01`) — 8 years (2017–2024) of prices, demand, generation and
    cross-border flows for every relevant zone, from ENTSO-E (Europe's grid-data platform).
-2. **Build a "Virtual Wind Farm"** (`2.02`) — Paul's trick: we don't have each farm's real
+2. **Build a "Virtual Wind Farm"** (`2.02`) —  we don't have each farm's real
    output, so we *simulate* it from weather. We take ERA5 reanalysis wind speed at the
    farm's location, extrapolate it up to the 150 m turbine hub height, and run it through
-   a standard 15-MW turbine power curve (with Paul's "Hayes" smoothing corrections). This
+   a standard 15-MW turbine power curve (with "Hayes" smoothing corrections). This
    gives a synthetic hourly output for all 31 farms (real *and* planned).
 3. **Compute capture value** (`2.03`) — multiply that output by the local price, monthly,
    for each farm → the thing we want to predict.
-4. **Build the features** (`2.04`, `2.05`) — Paul's 7 "explanatory variables" for each
+4. **Build the features** (`2.04`, `2.05`) — 7 "explanatory variables" for each
    farm-month: correlation of the farm with system wind, with demand, the renewable
    penetration, gas price, carbon price, a flexibility index, and an interconnection index.
 5. **Fit the model** (`2.06`) — train machine-learning models (XGBoost is best) to predict
